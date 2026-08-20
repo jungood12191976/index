@@ -1,0 +1,1205 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>今日の電話チャレンジ</title>
+<style>
+  :root {
+    --bg: #0B1220; --panel: #16202E; --panelAlt: #1C2838;
+    --amber: #FFB020; --sky: #5EB1E0; --text: #F2F5F8; --muted: #9FB0C3;
+    --success: #34D399; --error: #F87171; --border: #2A3B54;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; min-height: 100vh; background: var(--bg); color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    display: flex; align-items: center; justify-content: center; padding: 16px;
+  }
+  .card {
+    width: 100%; max-width: 420px; background: var(--panel);
+    border: 1px solid var(--border); border-radius: 18px; overflow: hidden;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+  }
+  .header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 16px 20px; background: var(--panelAlt); border-bottom: 1px solid var(--border);
+  }
+  .gate { font-family: 'Courier New', monospace; color: var(--amber); letter-spacing: 0.1em; font-size: 15px; }
+  .content { padding: 26px 22px; max-height: 82vh; overflow-y: auto; }
+  .eyebrow {
+    font-family: 'Courier New', monospace; color: var(--sky); letter-spacing: 0.15em;
+    font-size: 12px; text-transform: uppercase; text-align: center; margin-bottom: 6px;
+  }
+  h1 { font-size: 24px; line-height: 1.5; margin: 8px 0 14px; }
+  .desc { font-size: 16px; color: var(--muted); margin-bottom: 18px; line-height: 1.7; }
+  label.field-label { display: block; font-size: 14px; color: var(--muted); margin-bottom: 8px; }
+  input[type=text], input[type=password], input[type=number], textarea {
+    width: 100%; padding: 14px; border-radius: 10px; border: 1px solid var(--border);
+    background: var(--panelAlt); color: var(--text); font-size: 16px; margin-bottom: 14px; font-family: inherit;
+  }
+  button.primary {
+    width: 100%; padding: 15px; border: none; border-radius: 10px; background: var(--amber);
+    color: var(--bg); font-weight: bold; font-size: 17px; cursor: pointer;
+  }
+  button.primary:disabled { opacity: 0.4; }
+  button.primary:active { transform: scale(0.97); }
+  button.secondary {
+    width: 100%; padding: 13px; border: 1px solid var(--border); border-radius: 10px;
+    background: transparent; color: var(--muted); font-size: 15px; cursor: pointer; margin-top: 10px;
+  }
+  .provider-item {
+    display: flex; align-items: center; gap: 12px; padding: 16px; margin-bottom: 10px;
+    border-radius: 12px; border: 1px solid var(--border); background: var(--panelAlt); cursor: pointer;
+  }
+  .provider-item.selected { border-color: var(--amber); background: rgba(255,176,32,0.1); }
+  .provider-name { font-size: 17px; font-weight: bold; }
+  .provider-desc { font-size: 13px; color: var(--muted); }
+  .provider-block { border: 1px solid var(--border); border-radius: 12px; padding: 16px; margin-bottom: 16px; background: var(--panelAlt); }
+  .provider-block h2 { font-size: 15px; margin: 0 0 10px; color: var(--sky); }
+  .playbtn {
+    width: 104px; height: 104px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+    margin: 0 auto 10px; cursor: pointer; background: var(--panelAlt); border: 2px solid var(--amber);
+  }
+  .playbtn.speaking { background: var(--amber); }
+  .repeat { display: flex; align-items: center; justify-content: center; gap: 6px; margin: 0 auto 24px; font-size: 14px; color: var(--muted); background: none; border: none; cursor: pointer; }
+  .option {
+    width: 100%; text-align: left; padding: 15px 18px; margin-bottom: 12px; border-radius: 12px;
+    border: 1px solid var(--border); background: var(--panelAlt); color: var(--text);
+    font-size: 17px; cursor: pointer; display: flex; justify-content: space-between; align-items: center;
+  }
+  .translation { background: var(--panelAlt); border: 1px solid var(--border); border-radius: 12px; padding: 16px; margin-bottom: 18px; font-size: 16px; text-align: center; color: var(--text); }
+  .score { font-size: 44px; font-weight: bold; color: var(--amber); text-align: center; margin: 8px 0; }
+  .summary-msg { text-align: center; font-size: 16px; color: var(--muted); margin-bottom: 26px; line-height: 1.7; }
+  .voice-item {
+    display: flex; align-items: center; gap: 12px; padding: 12px 14px; margin-bottom: 8px;
+    border-radius: 10px; border: 1px solid var(--border); background: var(--bg); cursor: pointer;
+  }
+  .voice-item.selected { border-color: var(--amber); background: rgba(255,176,32,0.1); }
+  .voice-item input { width: 18px; height: 18px; flex-shrink: 0; }
+  .voice-name { font-size: 15px; }
+  .voice-accent { font-size: 12px; color: var(--muted); }
+  .voice-badge { font-size: 10px; padding: 2px 6px; border-radius: 4px; margin-left: 6px; background: var(--border); color: var(--muted); vertical-align: middle; }
+  .spinner { width: 40px; height: 40px; border: 3px solid var(--border); border-top-color: var(--amber); border-radius: 50%; margin: 20px auto; animation: spin 0.8s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .error-box { background: rgba(248,113,113,0.1); border: 1px solid var(--error); border-radius: 10px; padding: 14px; font-size: 14px; color: var(--error); margin-bottom: 16px; }
+  .tip { font-size: 12px; color: var(--muted); text-align: center; margin-bottom: 14px; }
+  svg { display: block; }
+  .call-card { background: var(--panelAlt); border: 1px solid var(--border); border-radius: 12px; padding: 18px; margin-bottom: 16px; }
+  .call-type { font-size: 13px; color: var(--sky); margin-bottom: 4px; }
+  .call-desc { font-size: 15px; color: var(--muted); line-height: 1.6; }
+  .phone-ring { width: 120px; height: 120px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 20px auto; background: var(--panelAlt); border: 3px solid var(--amber); animation: ringpulse 1s infinite; cursor: pointer; }
+  @keyframes ringpulse { 0%,100% { transform: scale(1); } 50% { transform: scale(1.06); } }
+  .plays-left { text-align: center; font-size: 13px; color: var(--muted); margin-bottom: 16px; }
+  .qcounter { text-align: center; font-size: 13px; color: var(--muted); margin-bottom: 14px; }
+  .log-item { display: flex; justify-content: space-between; align-items: center; padding: 12px 14px; border-radius: 10px; border: 1px solid var(--border); background: var(--panelAlt); margin-bottom: 8px; font-size: 14px; }
+  .log-date { color: var(--muted); font-size: 12px; }
+  .log-result { font-weight: bold; }
+  .log-result.ok { color: var(--success); }
+  .log-result.ng { color: var(--error); }
+  .stat-row { display: flex; justify-content: center; gap: 24px; margin-bottom: 20px; }
+  .stat-num { font-size: 28px; font-weight: bold; color: var(--amber); text-align: center; }
+  .stat-label { font-size: 11px; color: var(--muted); text-align: center; }
+  .filler-mark { background: rgba(255,176,32,0.22); color: var(--amber); padding: 0 3px; border-radius: 3px; cursor: help; }
+  .memo-box { background: var(--panelAlt); border: 1px dashed var(--sky); border-radius: 10px; padding: 14px; margin-bottom: 16px; font-size: 14px; }
+  .memo-box b { color: var(--text); }
+  .filler-list { font-size: 13px; color: var(--muted); margin-bottom: 18px; line-height: 1.8; }
+  .filler-list .fp { color: var(--amber); font-weight: bold; }
+  .qfeedback { text-align: center; font-size: 14px; color: var(--sky); margin-top: 12px; line-height: 1.6; }
+  .reply-en { background: var(--panelAlt); border: 1px solid var(--success); border-radius: 12px; padding: 16px; margin-bottom: 16px; font-size: 17px; color: var(--success); }
+  .pronounce-title { text-align: center; font-size: 15px; color: var(--text); margin-bottom: 14px; font-weight: bold; }
+  .pdots { display: flex; justify-content: center; gap: 8px; margin-bottom: 18px; }
+  .pdot { width: 16px; height: 16px; border-radius: 50%; background: var(--border); transition: background 0.25s, transform 0.25s; }
+  .pdot.done { background: var(--amber); transform: scale(1.15); }
+  .micbtn {
+    width: 96px; height: 96px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+    margin: 0 auto 14px; cursor: pointer; background: var(--panelAlt); border: 2px solid var(--sky);
+  }
+  .micbtn.listening { background: var(--sky); }
+  .attempt-msg { text-align: center; font-size: 14px; color: var(--muted); margin-bottom: 18px; min-height: 20px; }
+  body.tension-mode { background: #1a0508; }
+  body.tension-mode .card { border-color: #ff4d4d; box-shadow: 0 0 50px rgba(255,60,60,0.35); }
+  body.tension-mode .header { background: #2a0b0e; border-color: #ff4d4d; }
+  body.tension-mode .gate { color: #ff6b6b; }
+  body.tension-mode .eyebrow { color: #ff8080; }
+  body.tension-mode .playbtn, body.tension-mode .micbtn { border-color: #ff4d4d; }
+  body.tension-mode .playbtn.speaking, body.tension-mode .micbtn.listening { background: #ff4d4d; }
+  body.tension-mode button.primary { background: #ff4d4d; color: #fff; }
+  body.tension-mode .pdot.done { background: #ff4d4d; }
+  .boss-card { background: #2a0b0e; border: 1px solid #ff4d4d; border-radius: 12px; padding: 18px; margin-bottom: 16px; }
+  .boss-name { font-size: 13px; color: #ff8080; margin-bottom: 6px; letter-spacing: 0.1em; }
+  .boss-line { font-size: 19px; color: var(--text); line-height: 1.6; font-weight: bold; }
+  .cheat-card { background: var(--panelAlt); border: 2px dashed var(--sky); border-radius: 12px; padding: 20px; margin-bottom: 18px; font-size: 17px; line-height: 1.8; }
+  .timer-big { font-size: 56px; font-weight: bold; text-align: center; color: var(--amber); margin: 10px 0 20px; font-family: 'Courier New', monospace; }
+  .praise-box { background: var(--panelAlt); border: 1px solid var(--success); border-radius: 12px; padding: 18px; margin-bottom: 16px; font-size: 16px; color: var(--text); line-height: 1.7; text-align: center; }
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="header">
+    <div class="gate">📞 CALL DESK</div>
+  </div>
+  <div class="content" id="content"></div>
+</div>
+
+<script>
+function normalize(s) { return (s || "").toLowerCase().replace(/[^a-z0-9\s]/g, "").replace(/\s+/g, " ").trim(); }
+function wordOverlapRatio(target, said) {
+  const t = normalize(target).split(" ").filter(Boolean);
+  const sSet = new Set(normalize(said).split(" ").filter(Boolean));
+  if (t.length === 0) return 0;
+  let match = 0;
+  t.forEach(w => { if (sSet.has(w)) match += 1; });
+  return match / t.length;
+}
+function hexToBlobUrl(hex, mime) {
+  const bytes = new Uint8Array(hex.length / 2);
+  for (let i = 0; i < hex.length; i += 2) bytes[i / 2] = parseInt(hex.substr(i, 2), 16);
+  return URL.createObjectURL(new Blob([bytes], { type: mime }));
+}
+function todayStr() {
+  const d = new Date();
+  return d.getFullYear() + "-" + (d.getMonth()+1) + "-" + d.getDate();
+}
+
+const CALL_TYPES_BASE = [
+  "見知らぬ会社からの営業電話",
+  "Facebook広告サポートからの電話",
+  "取次ぎ依頼の電話（担当者宛て）",
+  "実際の顧客からの商品についての問い合わせ電話",
+  "海外の仕入れ先からの出荷や請求書に関する電話",
+  "配送業者や通関に関する電話",
+  "近隣（六本木・麻布十番エリア）の店舗オーナーやレストランからの内装照明の問い合わせ電話",
+  "この地域に住む外国人（大使館関係者の家族など）からの個人的な照明購入の問い合わせ電話",
+  "全く関係ない会社・部署宛ての間違い電話",
+  "いたずら電話っぽい、要領を得ない電話（子どもなど）"
+];
+
+let state = {
+  phase: "provider",
+  useElevenLabs: true,
+  useMiniMax: false,
+  elevenApiKey: localStorage.getItem("el_api_key") || "",
+  minimaxApiKey: localStorage.getItem("mm_api_key") || "",
+  minimaxGroupId: localStorage.getItem("mm_group_id") || "",
+  geminiApiKey: localStorage.getItem("gemini_api_key") || "",
+  availableVoices: [],
+  selectedVoiceIds: [],
+  errorMsg: "",
+  companyUrl: localStorage.getItem("company_url") || "",
+  companyExtraInfo: localStorage.getItem("company_extra_info") || "",
+  companySiteText: localStorage.getItem("company_site_text") || "",
+  companyFetchError: "",
+  companyFetching: false,
+  companyCharacters: JSON.parse(localStorage.getItem("company_characters") || "null") || [
+    { name: "森さん", role: "社長" },
+    { name: "品川さん", role: "英語対応の担当者（普段電話を受ける人）" }
+  ],
+  challengeLog: JSON.parse(localStorage.getItem("challenge_log") || "[]"),
+  challengeDate: localStorage.getItem("challenge_date") || "",
+  challengeData: null,
+  challengeLoading: false,
+  challengeError: "",
+  challengePlaysUsed: 0,
+  challengeQIdx: 0,
+  challengeAnswers: [],
+  challengeQFeedback: "",
+  challengeAnswered: false,
+  speaking: false,
+  challengeAudioUrl: null,
+  replyJa: "",
+  replyEn: "",
+  replyLoading: false,
+  replyError: "",
+  replyAudioUrl: null,
+  replyPronounceCount: 0,
+  replyPronounceTotal: 5,
+  replyListening: false,
+  replyAttemptMsg: "",
+  replyRecFailStreak: 0,
+  replyUseSelfReport: false,
+  bossQIdx: 0,
+  bossAnswered: false,
+  bossFeedback: "",
+  bossSpeakCount: 0,
+  bossSpeakTotal: 3,
+  bossListening: false,
+  bossAttemptMsg: "",
+  bossRecFailStreak: 0,
+  bossUseSelfReport: false,
+  tickAudioCtx: null,
+  tickInterval: null,
+  cheatTimer: 60,
+  cheatTimerInterval: null,
+  mediaRecorder: null,
+  recordedChunks: [],
+  recordedUrl: null,
+  isRecording: false,
+};
+
+function voiceKey(v) { return v.provider + "::" + v.voice_id; }
+
+function buildCompanyContext() {
+  const chars = state.companyCharacters.filter(c => c.name && c.role).map(c => `${c.name}（${c.role}）`).join("、");
+  let ctx = `このアプリのユーザーは日本の会社に勤めています。登場人物: ${chars || "特に設定なし"}。英語対応は通常${state.companyCharacters[1] ? state.companyCharacters[1].name : "担当者"}が行いますが、不在のときはユーザー自身が電話に対応しなければなりません。`;
+  if (state.companyExtraInfo) ctx += `\n会社の商品・取引先・専門用語・地域性などの情報: ${state.companyExtraInfo}`;
+  if (state.companySiteText) ctx += `\n会社サイトから取得した情報（参考程度に、実在しそうな商品名・型番・メーカー名などを電話の内容に自然に盛り込んでください）:\n${state.companySiteText.slice(0, 3000)}`;
+  return ctx;
+}
+
+function toggleProvider(p) {
+  if (p === "eleven") state.useElevenLabs = !state.useElevenLabs;
+  if (p === "minimax") state.useMiniMax = !state.useMiniMax;
+  render();
+}
+
+function goToCredentials() {
+  if (!state.useElevenLabs && !state.useMiniMax) return;
+  state.phase = "credentials";
+  render();
+}
+
+async function fetchAllVoicesAndProceed() {
+  state.elevenApiKey = (document.getElementById("elevenKeyInput") || {}).value?.trim() || state.elevenApiKey;
+  state.minimaxApiKey = (document.getElementById("minimaxKeyInput") || {}).value?.trim() || state.minimaxApiKey;
+  state.minimaxGroupId = (document.getElementById("minimaxGroupInput") || {}).value?.trim() || state.minimaxGroupId;
+  if (state.useElevenLabs && !state.elevenApiKey) { state.errorMsg = "ElevenLabsのAPIキーを入力してください"; render(); return; }
+  if (state.useMiniMax && (!state.minimaxApiKey || !state.minimaxGroupId)) { state.errorMsg = "MiniMaxのAPIキーとGroupIDを入力してください"; render(); return; }
+  localStorage.setItem("el_api_key", state.elevenApiKey);
+  localStorage.setItem("mm_api_key", state.minimaxApiKey);
+  localStorage.setItem("mm_group_id", state.minimaxGroupId);
+
+  state.phase = "voices";
+  state.errorMsg = "";
+  state.availableVoices = [];
+  render();
+
+  try {
+    if (state.useElevenLabs) {
+      const res = await fetch("https://api.elevenlabs.io/v1/voices", { headers: { "xi-api-key": state.elevenApiKey } });
+      if (!res.ok) throw new Error("ElevenLabs: APIキーが正しくないか接続に失敗しました（status " + res.status + "）");
+      const data = await res.json();
+      (data.voices || []).forEach(v => {
+        state.availableVoices.push({ provider: "eleven", voice_id: v.voice_id, name: v.name, accent: (v.labels && (v.labels.accent || v.labels.description)) || "アクセント情報なし" });
+      });
+    }
+    if (state.useMiniMax) {
+      const res = await fetch(`https://api.minimax.io/v1/get_voice?GroupId=${encodeURIComponent(state.minimaxGroupId)}`, {
+        method: "POST", headers: { "Authorization": "Bearer " + state.minimaxApiKey, "Content-Type": "application/json" },
+        body: JSON.stringify({ voice_type: "system" })
+      });
+      if (!res.ok) throw new Error("MiniMax: APIキー/GroupIDが正しくないか接続に失敗しました（status " + res.status + "）");
+      const data = await res.json();
+      (data.system_voice || []).slice(0, 40).forEach(v => {
+        state.availableVoices.push({ provider: "minimax", voice_id: v.voice_id, name: v.voice_name || v.voice_id, accent: (v.description && v.description[0]) || "説明なし" });
+      });
+    }
+  } catch (e) {
+    state.errorMsg = e.message;
+    state.phase = "credentials";
+    render();
+    return;
+  }
+
+  state.selectedVoiceIds = state.availableVoices.map(voiceKey);
+  state.phase = "voices";
+  render();
+}
+
+function toggleVoice(key) {
+  const i = state.selectedVoiceIds.indexOf(key);
+  if (i >= 0) state.selectedVoiceIds.splice(i, 1);
+  else state.selectedVoiceIds.push(key);
+  render();
+}
+
+function getVoiceByKey(key) { return state.availableVoices.find(v => voiceKey(v) === key); }
+
+function confirmVoices() {
+  if (state.selectedVoiceIds.length < 1) return;
+  state.phase = "challenge_intro";
+  render();
+}
+
+async function generateTTS(text, voice) {
+  if (voice.provider === "eleven") {
+    const res = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${voice.voice_id}`, {
+      method: "POST",
+      headers: { "xi-api-key": state.elevenApiKey, "Content-Type": "application/json", "Accept": "audio/mpeg" },
+      body: JSON.stringify({ text, model_id: "eleven_flash_v2_5" })
+    });
+    if (!res.ok) throw new Error("ElevenLabs音声生成に失敗しました（status " + res.status + "）");
+    const blob = await res.blob();
+    return URL.createObjectURL(blob);
+  } else {
+    const res = await fetch(`https://api.minimax.io/v1/t2a_v2?GroupId=${encodeURIComponent(state.minimaxGroupId)}`, {
+      method: "POST",
+      headers: { "Authorization": "Bearer " + state.minimaxApiKey, "Content-Type": "application/json" },
+      body: JSON.stringify({
+        model: "speech-2.6-hd", text, stream: false, language_boost: "English",
+        voice_setting: { voice_id: voice.voice_id, speed: 0.95, vol: 1.0, pitch: 0 },
+        audio_setting: { sample_rate: 32000, bitrate: 128000, format: "mp3", channel: 1 }
+      })
+    });
+    if (!res.ok) throw new Error("MiniMax音声生成に失敗しました（status " + res.status + "）");
+    const data = await res.json();
+    const hex = data.data && data.data.audio;
+    if (!hex) throw new Error("MiniMaxから音声データが返りませんでした");
+    return hexToBlobUrl(hex, "audio/mpeg");
+  }
+}
+
+function pickVoiceForAccent(hint) {
+  const pool = state.selectedVoiceIds.map(getVoiceByKey).filter(Boolean);
+  if (pool.length === 0) return null;
+  if (hint) {
+    const kwSets = [
+      { test: /india|インド/i, kw: ["india","indian"] },
+      { test: /british|england|uk|イギリス/i, kw: ["british","uk","england"] },
+      { test: /french|フランス/i, kw: ["french"] },
+      { test: /american|アメリカ/i, kw: ["american","us"] },
+      { test: /singapore|シンガポール/i, kw: ["singapore"] },
+      { test: /australia|オーストラリア/i, kw: ["australia"] },
+    ];
+    for (const set of kwSets) {
+      if (set.test.test(hint)) {
+        for (const k of set.kw) {
+          const match = pool.find(v => (v.accent||"").toLowerCase().includes(k) || (v.name||"").toLowerCase().includes(k));
+          if (match) return match;
+        }
+      }
+    }
+  }
+  return pool[Math.floor(Math.random() * pool.length)];
+}
+
+async function callGeminiJSON(prompt, temperature) {
+  let modelsToTry = ["gemini-2.5-flash", "gemini-flash-latest", "gemini-2.0-flash", "gemini-1.5-flash"];
+  try {
+    const listRes = await fetch(`https://generativelanguage.googleapis.com/v1beta/models?key=${encodeURIComponent(state.geminiApiKey)}`);
+    if (listRes.ok) {
+      const listData = await listRes.json();
+      const usable = (listData.models || [])
+        .filter(m => Array.isArray(m.supportedGenerationMethods) && m.supportedGenerationMethods.includes("generateContent"))
+        .map(m => m.name.replace(/^models\//, ""));
+      if (usable.length > 0) modelsToTry = usable.filter(n => /flash/i.test(n)).concat(usable.filter(n => !/flash/i.test(n)));
+    }
+  } catch (e) {}
+
+  let res = null, lastStatus = null;
+  outerG:
+  for (const modelName of modelsToTry) {
+    for (let attempt = 0; attempt < 3; attempt++) {
+      res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${encodeURIComponent(state.geminiApiKey)}`, {
+        method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }], generationConfig: { responseMimeType: "application/json", temperature: temperature } })
+      });
+      if (res.ok) break outerG;
+      lastStatus = res.status;
+      if (res.status === 503 || res.status === 429) { await new Promise(r => setTimeout(r, 1500 * (attempt+1))); continue; }
+      break;
+    }
+    if (res && res.ok) break;
+  }
+  if (!res || !res.ok) throw new Error("Gemini APIエラー（status " + lastStatus + "）");
+  const data = await res.json();
+  let text = data.candidates && data.candidates[0] && data.candidates[0].content && data.candidates[0].content.parts && data.candidates[0].content.parts[0] && data.candidates[0].content.parts[0].text;
+  if (!text) throw new Error("応答が空でした");
+  text = text.replace(/^```json/i, "").replace(/^```/, "").replace(/```$/, "").trim();
+  return JSON.parse(text);
+}
+
+// ===== 会社設定 =====
+function goToCompanySetup() { state.phase = "company_setup"; render(); }
+function addCharacterRow() { state.companyCharacters.push({ name: "", role: "" }); render(); }
+function removeCharacterRow(idx) { state.companyCharacters.splice(idx, 1); render(); }
+
+async function fetchCompanySiteText() {
+  const urlInput = document.getElementById("companyUrlInput");
+  const url = urlInput ? urlInput.value.trim() : state.companyUrl;
+  if (!url) { state.companyFetchError = "URLを入力してください"; render(); return; }
+  state.companyUrl = url;
+  state.companyFetching = true;
+  state.companyFetchError = "";
+  render();
+  try {
+    const res = await fetch(url);
+    if (!res.ok) throw new Error("status " + res.status);
+    const html = await res.text();
+    const doc = new DOMParser().parseFromString(html, "text/html");
+    doc.querySelectorAll("script,style,noscript").forEach(el => el.remove());
+    let text = (doc.body ? doc.body.innerText : "").replace(/\n{2,}/g, "\n").trim();
+    if (!text) throw new Error("本文を取得できませんでした");
+    state.companySiteText = text.slice(0, 5000);
+    localStorage.setItem("company_site_text", state.companySiteText);
+  } catch (e) {
+    state.companyFetchError = "このサイトはブラウザから直接読み込めませんでした（多くの企業サイトはこの制限があります）。下の欄に商品名などを直接貼り付けてください。";
+  }
+  state.companyFetching = false;
+  render();
+}
+
+function saveCompanySetup() {
+  const extraInput = document.getElementById("companyExtraInput");
+  if (extraInput) state.companyExtraInfo = extraInput.value.trim();
+  document.querySelectorAll("[data-char-name]").forEach(el => { state.companyCharacters[parseInt(el.getAttribute("data-idx"))].name = el.value; });
+  document.querySelectorAll("[data-char-role]").forEach(el => { state.companyCharacters[parseInt(el.getAttribute("data-idx"))].role = el.value; });
+  localStorage.setItem("company_url", state.companyUrl);
+  localStorage.setItem("company_extra_info", state.companyExtraInfo);
+  localStorage.setItem("company_characters", JSON.stringify(state.companyCharacters));
+  state.phase = "challenge_intro";
+  render();
+}
+
+// ===== 今日の電話チャレンジ =====
+function goToChallenge() { state.challengeError = ""; state.phase = "challenge_intro"; render(); }
+
+async function startTodayChallenge() {
+  if (state.selectedVoiceIds.length < 1) { state.errorMsg = "先に声を選んでください"; state.phase = "voices"; render(); return; }
+  if (!state.geminiApiKey) {
+    const keyInput = document.getElementById("geminiKeyInputChallenge");
+    if (keyInput) { state.geminiApiKey = keyInput.value.trim(); localStorage.setItem("gemini_api_key", state.geminiApiKey); }
+    if (!state.geminiApiKey) { state.challengeError = "Gemini APIキーを入力してください"; render(); return; }
+  }
+
+  state.challengeLoading = true;
+  state.challengeError = "";
+  render();
+
+  const callType = CALL_TYPES_BASE[Math.floor(Math.random() * CALL_TYPES_BASE.length)];
+  const prompt = `あなたは英語学習教材のライターです。以下の設定に基づいて、リアルな（教科書的ではない）電話の音声スクリプトを1つ作成してください。
+
+設定: ${buildCompanyContext()}
+
+電話の種類: ${callType}
+
+発信者の国籍・話し方はランダムに、多様に設定してください（例：日本在住のインド人ビジネスマン、麻布十番在住のイギリス人の奥様、フランス人の奥様、アメリカ人の顧客、シンガポール人のバイヤーなど）。まれに、全く関係ない会社宛ての間違い電話や、要領を得ないいたずらっぽい電話が混ざっても構いません（その場合も自然な英語にしてください）。
+
+スクリプトは実際の電話のように、多少のフィラー（um, well, actually, so, you know）や、少し余分な情報を含み、5〜8文程度の自然な長さにしてください。中学2年〜高校レベルの語彙を中心にしつつ、多少難しい単語が混じっても構いません。
+
+その後、この電話の内容を理解できているか確認する設問を3つ、日本語で作成してください（「誰から/どんな会社からの電話か」「何を求められているか」「具体的な詳細」の3種類、それぞれ日本語の3択）。
+
+さらに以下も含めてください:
+1. callerName（発信者の名前）とcallerCompany（会社名。個人の場合は空文字でよい）
+2. callerAccent: 発信者の国籍・アクセントを表す短い英語または日本語（例: "Indian", "British", "French", "American"）
+3. fillers: scriptに実際に含まれる「フィラー・つなぎ言葉」を2〜4個選び、それぞれ日本語で一言メモ
+4. actionQuestion: 「この電話の内容がよく理解できなかった場合、電話口で何と言うのが適切か」を問う設問（英語の選択肢3つ、正解は初心者でも使える現実的な対応、note付き）
+5. bossQuestions: 上司が「今の電話は何だったの？」と日本語で尋ねてくる場面を2つ作成してください。1つ目は「誰から/どんな内容の電話だったか」、2つ目は「相手が何を求めているか」を尋ねるものにしてください。それぞれ、qは上司の日本語のセリフ、optionsはその答えとなる**英語の文**を3つ（1つが正解、2つはもっともらしい誤答）、correctIndexで正解を示してください。
+6. callbackScript: ユーザーが折り返し電話をかける際に読み上げる、やや長め（4〜6文程度）の自然な英文。scriptで話された内容に対する適切な折り返し（名乗り、要件の確認、日程調整など）にしてください。
+
+出力するJSON形式（このスキーマに厳密に従い、説明文やマークダウンは一切含めずJSONのみを出力すること）:
+{
+  "callType": "${callType}",
+  "callerName": "名前",
+  "callerCompany": "会社名（なければ空文字）",
+  "callerAccent": "アクセントのヒント",
+  "script": "電話の英文全体（1つの文字列）",
+  "ja": "scriptの全文を、省略せず自然な日本語に翻訳したもの（要約ではなく全文訳）",
+  "fillers": [ { "phrase": "you know", "note": "特に意味はない口癖" } ],
+  "questions": [ { "q": "設問", "options": ["a","b","c"], "correctIndex": 0 } ],
+  "actionQuestion": { "situation": "状況説明", "options": ["a","b","c"], "correctIndex": 0, "note": "解説" },
+  "bossQuestions": [
+    { "q": "上司の日本語のセリフ1", "options": ["English sentence A","English sentence B","English sentence C"], "correctIndex": 0 },
+    { "q": "上司の日本語のセリフ2", "options": ["English sentence A","English sentence B","English sentence C"], "correctIndex": 0 }
+  ],
+  "callbackScript": "折り返し電話で読み上げる長めの英文"
+}`;
+
+  try {
+    const parsed = await callGeminiJSON(prompt, 1.05);
+    if (!parsed.script || !Array.isArray(parsed.questions) || parsed.questions.length === 0) throw new Error("生成内容が不完全でした。もう一度お試しください");
+
+    parsed.fillers = (Array.isArray(parsed.fillers) ? parsed.fillers : []).filter(f =>
+      f && f.phrase && parsed.script.toLowerCase().includes(String(f.phrase).toLowerCase())
+    ).slice(0, 4);
+
+    if (parsed.actionQuestion && Array.isArray(parsed.actionQuestion.options)) {
+      parsed.questions.push({
+        q: parsed.actionQuestion.situation || "内容がよく理解できなかったとき、電話で何と言いますか？",
+        options: parsed.actionQuestion.options,
+        correctIndex: parsed.actionQuestion.correctIndex || 0,
+        note: parsed.actionQuestion.note || "",
+        isAction: true
+      });
+    }
+
+    if (!Array.isArray(parsed.bossQuestions) || parsed.bossQuestions.length === 0) {
+      parsed.bossQuestions = [
+        { q: "今の電話、何だったの？", options: [parsed.ja.split("。")[0] || "It was a customer inquiry.", "It was a wrong number.", "It was a delivery problem."], correctIndex: 0 }
+      ];
+    }
+    if (!parsed.callbackScript) {
+      parsed.callbackScript = "Hello, this is calling back regarding your earlier call. I'm sorry I couldn't answer at that time. Could you tell me a bit more about what you need? I'll make sure to follow up as soon as possible. Thank you for your patience.";
+    }
+
+    const voice = pickVoiceForAccent(parsed.callerAccent);
+    if (!voice) throw new Error("使える声がありません");
+    const audioUrl = await generateTTS(parsed.script, voice);
+
+    state.challengeData = parsed;
+    state.challengeAudioUrl = audioUrl;
+    state.challengePlaysUsed = 0;
+    state.challengeQIdx = 0;
+    state.challengeAnswers = [];
+    state.replyJa = ""; state.replyEn = ""; state.replyError = "";
+    state.challengeLoading = false;
+    state.phase = "challenge_ringing";
+  } catch (e) {
+    state.challengeError = e.message;
+    state.challengeLoading = false;
+  }
+  render();
+}
+
+function answerCall() { state.phase = "challenge_playing"; render(); playChallengeAudio(); }
+
+let audioEl = null;
+function playChallengeAudio() {
+  if (!state.challengeAudioUrl) return;
+  if (state.phase !== "challenge_result" && state.challengePlaysUsed >= 2) return;
+  if (state.phase !== "challenge_result") state.challengePlaysUsed += 1;
+  if (audioEl) audioEl.pause();
+  audioEl = new Audio(state.challengeAudioUrl);
+  audioEl.onplay = () => { state.speaking = true; render(); };
+  audioEl.onended = () => { state.speaking = false; render(); };
+  audioEl.play();
+  render();
+}
+
+function goToChallengeQuestions() { state.phase = "challenge_questions"; state.challengeAnswered = false; state.challengeQFeedback = ""; render(); }
+
+function answerChallengeQuestion(optIdx) {
+  if (state.challengeAnswered) return;
+  const q = state.challengeData.questions[state.challengeQIdx];
+  const correct = optIdx === q.correctIndex;
+  state.challengeAnswers.push(correct);
+  state.challengeAnswered = true;
+
+  if (q.isAction) {
+    // 対応フレーズ問題は解説を読む時間が必要なので、手動で「次へ」を押すまで進めない
+    state.challengeQFeedback = (correct ? "✓ 良い対応です。" : "△ 別の言い方もあります。") + (q.note ? "　" + q.note : "");
+    render();
+  } else {
+    // 通常の内容確認問題はテンポよく自動で次へ
+    state.challengeQFeedback = "";
+    render();
+    setTimeout(() => { proceedToNextQuestion(); }, 350);
+  }
+}
+
+function proceedToNextQuestion() {
+  state.challengeQFeedback = "";
+  state.challengeAnswered = false;
+  if (state.challengeQIdx + 1 < state.challengeData.questions.length) {
+    state.challengeQIdx += 1;
+    render();
+  } else {
+    state.phase = "challenge_reply";
+    render();
+  }
+}
+
+async function translateReply() {
+  const ta = document.getElementById("replyJaInput");
+  const ja = ta ? ta.value.trim() : "";
+  if (!ja) return;
+  state.replyJa = ja;
+  state.replyLoading = true;
+  state.replyError = "";
+  render();
+  const prompt = `次の日本語を、電話口で使う自然な話し言葉の英語に翻訳してください。丁寧すぎる文語ではなく、実際に電話で使えるカジュアルすぎない自然な言い方にしてください。日本語:「${ja}」\n\n出力形式（JSONのみ）:\n{ "en": "英語の翻訳" }`;
+  try {
+    const parsed = await callGeminiJSON(prompt, 0.7);
+    state.replyEn = parsed.en || "";
+    if (!state.replyEn) throw new Error("翻訳結果が空でした");
+    state.replyPronounceCount = 0;
+    state.replyAttemptMsg = "";
+    const voice = pickVoiceForAccent("American");
+    if (voice) {
+      try { state.replyAudioUrl = await generateTTS(state.replyEn, voice); } catch(e) {}
+    }
+  } catch (e) {
+    state.replyError = e.message;
+  }
+  state.replyLoading = false;
+  render();
+}
+
+function playReplyAudio() {
+  if (!state.replyAudioUrl) return;
+  if (audioEl) audioEl.pause();
+  audioEl = new Audio(state.replyAudioUrl);
+  audioEl.play();
+}
+
+function startReplyPronounceAttempt() {
+  if (state.replyListening) return;
+  if (state.replyUseSelfReport) { registerReplyPronounceResult(true, "（自己申告）"); return; }
+  const target = state.replyEn;
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (!SR) { registerReplyPronounceResult(true, "（自己申告）"); return; }
+  let rec;
+  try { rec = new SR(); } catch (e) { registerReplyPronounceResult(true, "（自己申告）"); return; }
+  rec.lang = "en-US";
+  rec.interimResults = false;
+  rec.maxAlternatives = 1;
+  state.replyListening = true;
+  state.replyAttemptMsg = "聞いています…";
+  render();
+  let handled = false;
+  rec.onresult = (e) => {
+    handled = true;
+    state.replyRecFailStreak = 0;
+    const said = e.results[0][0].transcript;
+    const ratio = wordOverlapRatio(target, said);
+    registerReplyPronounceResult(ratio >= 0.34, said);
+  };
+  rec.onerror = () => {
+    if (handled) return;
+    handled = true;
+    state.replyListening = false;
+    state.replyRecFailStreak += 1;
+    if (state.replyRecFailStreak >= 2) {
+      state.replyUseSelfReport = true;
+      state.replyAttemptMsg = "音声認識がうまく動かないため、次からはタップでカウントする方式に切り替えます";
+    } else {
+      state.replyAttemptMsg = "うまく聞き取れませんでした。もう一度どうぞ";
+    }
+    render();
+  };
+  rec.onend = () => { state.replyListening = false; if (!handled) render(); };
+  try { rec.start(); } catch (e) { registerReplyPronounceResult(true, "（自己申告）"); }
+}
+
+function registerReplyPronounceResult(pass, said) {
+  state.replyListening = false;
+  if (pass) {
+    state.replyPronounceCount = Math.min(state.replyPronounceTotal, state.replyPronounceCount + 1);
+    state.replyAttemptMsg = "✓ OK（" + state.replyPronounceCount + "/" + state.replyPronounceTotal + "）";
+  } else {
+    state.replyAttemptMsg = "✕ もう一度お願いします（聞こえた: " + (said || "…") + "）";
+  }
+  render();
+}
+
+// ===== 緊張演出（電子音） =====
+function startTick() {
+  try {
+    if (!state.tickAudioCtx) state.tickAudioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    if (state.tickInterval) return;
+    state.tickInterval = setInterval(() => {
+      const ctx = state.tickAudioCtx;
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.frequency.value = 880;
+      osc.type = "square";
+      gain.gain.setValueAtTime(0.06, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.08);
+      osc.connect(gain); gain.connect(ctx.destination);
+      osc.start(); osc.stop(ctx.currentTime + 0.08);
+    }, 800);
+  } catch (e) {}
+}
+function stopTick() {
+  if (state.tickInterval) { clearInterval(state.tickInterval); state.tickInterval = null; }
+}
+function applyTensionMode() {
+  const tension = ["boss_intro","boss_question","boss_speak","boss_directive"].includes(state.phase);
+  document.body.classList.toggle("tension-mode", tension);
+}
+
+// ===== 怖い上司シーン =====
+function goToBossIntro() {
+  state.phase = "boss_intro";
+  state.bossQIdx = 0;
+  render();
+  startTick();
+}
+
+function goToBossQuestion() {
+  state.phase = "boss_question";
+  state.bossAnswered = false;
+  state.bossFeedback = "";
+  render();
+}
+
+function answerBossQuestion(idx) {
+  if (state.bossAnswered) return;
+  const q = state.challengeData.bossQuestions[state.bossQIdx];
+  const correct = idx === q.correctIndex;
+  state.bossAnswered = true;
+  if (correct) {
+    state.bossSpeakCount = 0;
+    state.bossAttemptMsg = "";
+    state.phase = "boss_speak";
+    render();
+  } else {
+    state.bossFeedback = "「違う」と一喝されました。もう一度電話の内容を確認しましょう。";
+    render();
+  }
+}
+
+function retryBossQuestion() {
+  state.bossAnswered = false;
+  state.bossFeedback = "";
+  render();
+}
+
+function startBossSpeakAttempt() {
+  if (state.bossListening) return;
+  const q = state.challengeData.bossQuestions[state.bossQIdx];
+  const target = q.options[q.correctIndex];
+  if (state.bossUseSelfReport) { registerBossSpeakResult(true); return; }
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (!SR) { registerBossSpeakResult(true); return; }
+  let rec;
+  try { rec = new SR(); } catch (e) { registerBossSpeakResult(true); return; }
+  rec.lang = "en-US";
+  rec.interimResults = false;
+  rec.maxAlternatives = 1;
+  state.bossListening = true;
+  state.bossAttemptMsg = "聞いています…";
+  render();
+  let handled = false;
+  rec.onresult = (e) => {
+    handled = true;
+    state.bossRecFailStreak = 0;
+    const said = e.results[0][0].transcript;
+    const ratio = wordOverlapRatio(target, said);
+    registerBossSpeakResult(ratio >= 0.34, said);
+  };
+  rec.onerror = () => {
+    if (handled) return;
+    handled = true;
+    state.bossListening = false;
+    state.bossRecFailStreak += 1;
+    if (state.bossRecFailStreak >= 2) {
+      state.bossUseSelfReport = true;
+      state.bossAttemptMsg = "音声認識がうまく動かないため、次からはタップでカウントする方式に切り替えます";
+    } else {
+      state.bossAttemptMsg = "うまく聞き取れませんでした。もう一度どうぞ";
+    }
+    render();
+  };
+  rec.onend = () => { state.bossListening = false; if (!handled) render(); };
+  try { rec.start(); } catch (e) { registerBossSpeakResult(true); }
+}
+
+function registerBossSpeakResult(pass, said) {
+  state.bossListening = false;
+  if (pass) {
+    state.bossSpeakCount = Math.min(state.bossSpeakTotal, state.bossSpeakCount + 1);
+    state.bossAttemptMsg = "✓ OK（" + state.bossSpeakCount + "/" + state.bossSpeakTotal + "）";
+  } else {
+    state.bossAttemptMsg = "✕ もう一度お願いします" + (said ? "（聞こえた: " + said + "）" : "");
+  }
+  render();
+}
+
+function proceedAfterBossSpeak() {
+  if (state.bossQIdx + 1 < state.challengeData.bossQuestions.length) {
+    state.bossQIdx += 1;
+    goToBossQuestion();
+  } else {
+    stopTick();
+    state.phase = "boss_directive";
+    render();
+  }
+}
+
+// ===== 同僚のカンニングペーパー & 折り返し電話 =====
+function goToCheatsheet() {
+  state.phase = "cheatsheet";
+  state.cheatTimer = 60;
+  render();
+  if (state.cheatTimerInterval) clearInterval(state.cheatTimerInterval);
+  state.cheatTimerInterval = setInterval(() => {
+    state.cheatTimer -= 1;
+    if (state.cheatTimer <= 0) {
+      clearInterval(state.cheatTimerInterval);
+      state.cheatTimerInterval = null;
+      state.phase = "cheatsheet_ring";
+    }
+    render();
+  }, 1000);
+}
+
+async function startRecordingCall() {
+  if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia || !window.MediaRecorder) {
+    state.challengeError = "この端末・ブラウザでは録音機能が使えないようです。録音なしで進めます。";
+    completeWithoutRecording();
+    return;
+  }
+  state.phase = "recording";
+  render();
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    const chunks = [];
+    const mr = new MediaRecorder(stream);
+    mr.ondataavailable = (e) => { if (e.data.size > 0) chunks.push(e.data); };
+    mr.onstop = () => {
+      const blob = new Blob(chunks, { type: "audio/webm" });
+      state.recordedUrl = URL.createObjectURL(blob);
+      stream.getTracks().forEach(t => t.stop());
+      state.phase = "recording_playback";
+      render();
+    };
+    state.mediaRecorder = mr;
+    state.isRecording = true;
+    mr.start();
+    render();
+  } catch (e) {
+    state.challengeError = "";
+    completeWithoutRecording();
+  }
+}
+
+function completeWithoutRecording() {
+  state.recordedUrl = null;
+  state.phase = "recording_playback";
+  render();
+}
+
+function stopRecordingCall() {
+  if (state.mediaRecorder && state.isRecording) {
+    state.isRecording = false;
+    state.mediaRecorder.stop();
+  }
+}
+
+function playRecordedAudio() {
+  if (!state.recordedUrl) return;
+  if (audioEl) audioEl.pause();
+  audioEl = new Audio(state.recordedUrl);
+  audioEl.play();
+}
+
+const PRAISE_MESSAGES = [
+  "落ち着いて対応できましたね。よく頑張りました。",
+  "緊張する場面でも、しっかり声に出せていました。この積み重ねが力になります。",
+  "完璧じゃなくて大丈夫。今日、実際に声に出したという経験が一番の財産です。",
+  "電話対応、お疲れさまでした。次に似た場面が来ても、きっと今より落ち着けます。"
+];
+
+function finishChallenge() {
+  const correctCount = state.challengeAnswers.filter(Boolean).length;
+  const total = state.challengeData.questions.length;
+  const passed = correctCount >= Math.ceil(total * 0.6);
+  const entry = { date: todayStr(), callType: state.challengeData.callType, correctCount, total, passed };
+  state.challengeLog.unshift(entry);
+  localStorage.setItem("challenge_log", JSON.stringify(state.challengeLog));
+  state.challengeDate = todayStr();
+  localStorage.setItem("challenge_date", state.challengeDate);
+  state.phase = "challenge_result";
+  render();
+}
+
+function resetChallengeForTesting() {
+  state.challengeDate = "";
+  localStorage.removeItem("challenge_date");
+  state.challengeError = "";
+  render();
+}
+
+function highlightFillers(script, fillers) {
+  let html = script.replace(/</g, "&lt;");
+  (fillers || []).slice().sort((a,b)=>b.phrase.length-a.phrase.length).forEach(f => {
+    const esc = f.phrase.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    const re = new RegExp("(" + esc + ")", "gi");
+    html = html.replace(re, `<mark class="filler-mark" title="${(f.note||"").replace(/"/g,"")}">$1</mark>`);
+  });
+  return html;
+}
+
+function render() {
+  applyTensionMode();
+  const c = document.getElementById("content");
+
+  if (state.phase === "provider") {
+    c.innerHTML = `
+      <div class="eyebrow">セットアップ 1/2</div>
+      <h1>音声プロバイダを選ぶ</h1>
+      <div class="desc">使いたい音声サービスを選んでください。両方選べば、より多くの種類の声から選べます。</div>
+      <div class="provider-item ${state.useElevenLabs ? "selected" : ""}" onclick="toggleProvider('eleven')">
+        <input type="checkbox" ${state.useElevenLabs ? "checked" : ""} readonly />
+        <div><div class="provider-name">ElevenLabs</div><div class="provider-desc">英語アクセントの種類が豊富</div></div>
+      </div>
+      <div class="provider-item ${state.useMiniMax ? "selected" : ""}" onclick="toggleProvider('minimax')">
+        <input type="checkbox" ${state.useMiniMax ? "checked" : ""} readonly />
+        <div><div class="provider-name">MiniMax</div><div class="provider-desc">300種類以上の声・多言語対応</div></div>
+      </div>
+      <button class="primary" onclick="goToCredentials()" ${(!state.useElevenLabs && !state.useMiniMax) ? "disabled" : ""}>次へ（APIキー入力）</button>
+    `;
+  } else if (state.phase === "credentials") {
+    let blocks = "";
+    if (state.useElevenLabs) {
+      blocks += `<div class="provider-block"><h2>ElevenLabs</h2><label class="field-label">APIキー</label><input type="password" id="elevenKeyInput" placeholder="sk_..." value="${state.elevenApiKey}" /></div>`;
+    }
+    if (state.useMiniMax) {
+      blocks += `<div class="provider-block"><h2>MiniMax</h2><label class="field-label">APIキー</label><input type="password" id="minimaxKeyInput" placeholder="APIキー" value="${state.minimaxApiKey}" /><label class="field-label">GroupID</label><input type="text" id="minimaxGroupInput" placeholder="GroupID" value="${state.minimaxGroupId}" /></div>`;
+    }
+    c.innerHTML = `
+      <div class="eyebrow">セットアップ 2/2</div>
+      <h1>APIキーを入力</h1>
+      <div class="desc">このページ内のブラウザにのみ保存されます。</div>
+      ${state.errorMsg ? `<div class="error-box">${state.errorMsg}</div>` : ""}
+      ${blocks}
+      <button class="primary" onclick="fetchAllVoicesAndProceed()">音声を読み込む</button>
+      <button class="secondary" onclick="state.phase='provider'; render();">プロバイダ選択に戻る</button>
+    `;
+  } else if (state.phase === "voices") {
+    if (state.availableVoices.length === 0 && !state.errorMsg) {
+      c.innerHTML = `<div class="eyebrow">読み込み中</div><div class="spinner"></div>`;
+    } else {
+      let itemsHtml = "";
+      state.availableVoices.forEach(v => {
+        const key = voiceKey(v);
+        const sel = state.selectedVoiceIds.includes(key);
+        const badge = v.provider === "eleven" ? "ElevenLabs" : "MiniMax";
+        itemsHtml += `<div class="voice-item ${sel ? "selected" : ""}" onclick="toggleVoice('${key}')"><input type="checkbox" ${sel ? "checked" : ""} readonly /><div><div class="voice-name">${v.name} <span class="voice-badge">${badge}</span></div><div class="voice-accent">${v.accent}</div></div></div>`;
+      });
+      c.innerHTML = `
+        <div class="eyebrow">声を選ぶ</div>
+        <h1>電話で使う声を選んでください</h1>
+        <div class="tip">多く選ぶほど、発信者のバリエーションが増えます</div>
+        ${state.errorMsg ? `<div class="error-box">${state.errorMsg}</div>` : ""}
+        <div>${itemsHtml}</div>
+        <button class="primary" onclick="confirmVoices()" ${state.selectedVoiceIds.length < 1 ? "disabled" : ""}>この声で進める</button>
+      `;
+    }
+  } else if (state.phase === "company_setup") {
+    let charsHtml = state.companyCharacters.map((c, idx) => `
+      <div class="provider-block" style="display:flex; gap:8px; align-items:flex-end; padding:12px;">
+        <div style="flex:1;"><label class="field-label">名前</label><input type="text" data-char-name data-idx="${idx}" value="${c.name}" placeholder="例: 森さん" style="margin-bottom:0;" /></div>
+        <div style="flex:1;"><label class="field-label">役割</label><input type="text" data-char-role data-idx="${idx}" value="${c.role}" placeholder="例: 社長" style="margin-bottom:0;" /></div>
+        <button class="secondary" style="width:auto; padding:13px 16px; margin-top:0;" onclick="removeCharacterRow(${idx})">✕</button>
+      </div>`).join("");
+    c.innerHTML = `
+      <div class="eyebrow">会社の設定</div>
+      <h1>電話チャレンジをリアルにする</h1>
+      <div class="desc">会社の情報や登場人物を設定すると、電話の内容がより実際に近くなります。</div>
+      <label class="field-label">会社サイトのURL（任意）</label>
+      <input type="text" id="companyUrlInput" placeholder="https://..." value="${state.companyUrl}" />
+      ${state.companyFetchError ? `<div class="error-box">${state.companyFetchError}</div>` : ""}
+      ${state.companySiteText ? `<div class="tip">✓ サイトの内容を取得済み（${state.companySiteText.length}文字）</div>` : ""}
+      <button class="secondary" onclick="fetchCompanySiteText()" ${state.companyFetching ? "disabled" : ""}>${state.companyFetching ? "読み込み中…" : "サイトを読み込む"}</button>
+      <label class="field-label" style="margin-top:20px;">商品・取引先メーカー名・地域性など（直接貼り付け・こちらの方が確実です）</label>
+      <textarea id="companyExtraInput" rows="5" placeholder="例: LEDパネル、シャンデリア、麻布十番エリア、主要メーカーはXX社など">${state.companyExtraInfo}</textarea>
+      <label class="field-label">登場人物</label>
+      ${charsHtml}
+      <button class="secondary" onclick="addCharacterRow()">+ 人物を追加</button>
+      <button class="primary" onclick="saveCompanySetup()" style="margin-top:20px;">保存する</button>
+      <button class="secondary" onclick="state.phase='challenge_intro'; render();">戻る（保存せず）</button>
+    `;
+  } else if (state.phase === "challenge_intro") {
+    const doneToday = state.challengeDate === todayStr();
+    const totalDone = state.challengeLog.length;
+    const totalPassed = state.challengeLog.filter(l => l.passed).length;
+    let streak = 0;
+    { let cursor = new Date();
+      for (let i=0;i<365;i++){ const key = cursor.getFullYear()+"-"+(cursor.getMonth()+1)+"-"+cursor.getDate();
+        if (state.challengeLog.some(l=>l.date===key)) { streak++; cursor.setDate(cursor.getDate()-1); } else break; } }
+    let logHtml = state.challengeLog.slice(0,8).map(l => `<div class="log-item"><div><div>${l.callType}</div><div class="log-date">${l.date}</div></div><div class="log-result ${l.passed ? "ok" : "ng"}">${l.correctCount}/${l.total}</div></div>`).join("");
+    c.innerHTML = `
+      <div class="eyebrow">📞 今日の電話チャレンジ</div>
+      <h1>知らない番号から着信</h1>
+      <div class="desc">1日1回限定。その日を逃すと、その電話は二度と来ません。</div>
+      <div class="stat-row">
+        <div><div class="stat-num">🔥${streak}</div><div class="stat-label">連続日数</div></div>
+        <div><div class="stat-num">${totalPassed}/${totalDone}</div><div class="stat-label">対応成功</div></div>
+      </div>
+      ${state.challengeError ? `<div class="error-box">${state.challengeError}</div>` : ""}
+      ${!state.geminiApiKey ? `<label class="field-label">Gemini APIキー（無料・カード不要）</label><input type="password" id="geminiKeyInputChallenge" placeholder="AIza..." value="" />` : ""}
+      ${state.challengeLoading
+        ? `<div class="spinner"></div><div class="desc" style="text-align:center;">電話の内容を準備中…</div>`
+        : doneToday
+          ? `<div class="tip">今日の対応は完了しました。また明日、新しい電話がかかってきます。</div><button class="secondary" onclick="resetChallengeForTesting()">（動作確認用）今日の分をリセットして再挑戦</button>`
+          : `<button class="primary" onclick="startTodayChallenge()">今日の電話を受ける準備をする</button>`}
+      <button class="secondary" onclick="goToCompanySetup()">🏢 会社の設定を編集</button>
+      ${logHtml ? `<div class="desc" style="margin-top:20px;">対応履歴</div>${logHtml}` : ""}
+    `;
+  } else if (state.phase === "challenge_ringing") {
+    c.innerHTML = `
+      <div class="eyebrow">📞 着信中…</div>
+      <div class="call-card"><div class="call-desc">担当者は今、外出中です。知らない番号から電話がかかってきました。電話に出ますか？</div></div>
+      <div class="phone-ring" onclick="answerCall()">
+        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#FFB020" stroke-width="2">
+          <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"></path>
+        </svg>
+      </div>
+      <div class="desc" style="text-align:center;">タップして応答</div>
+    `;
+  } else if (state.phase === "challenge_playing") {
+    const left = 2 - state.challengePlaysUsed;
+    c.innerHTML = `
+      <div class="eyebrow">通話中</div>
+      <div class="playbtn ${state.speaking ? "speaking" : ""}" onclick="playChallengeAudio()">
+        <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="${state.speaking ? "#0B1220" : "#FFB020"}" stroke-width="2">
+          <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+          <path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+          <path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path>
+        </svg>
+      </div>
+      <div class="plays-left">${left > 0 ? "もう一度きく（あと" + left + "回）" : "再生回数を使い切りました"}</div>
+      <button class="primary" onclick="goToChallengeQuestions()">内容を確認する</button>
+    `;
+  } else if (state.phase === "challenge_questions") {
+    const q = state.challengeData.questions[state.challengeQIdx];
+    c.innerHTML = `
+      <div class="eyebrow">内容確認</div>
+      <div class="qcounter">${state.challengeQIdx + 1} / ${state.challengeData.questions.length} 問</div>
+      <div class="call-card"><div class="call-desc">${q.q}</div></div>
+      <div>${q.options.map((opt,i)=>`<button class="option" onclick="answerChallengeQuestion(${i})" ${state.challengeAnswered ? "disabled" : ""} style="${state.challengeAnswered ? "opacity:0.6;" : ""}">${opt}</button>`).join("")}</div>
+      ${state.challengeQFeedback ? `<div class="qfeedback">${state.challengeQFeedback}</div>` : ""}
+      ${(state.challengeAnswered && q.isAction) ? `<button class="primary" onclick="proceedToNextQuestion()" style="margin-top:16px;">次へ</button>` : ""}
+    `;
+  } else if (state.phase === "challenge_reply") {
+    const replyComplete = state.replyPronounceCount >= state.replyPronounceTotal;
+    const dots = Array.from({ length: state.replyPronounceTotal }).map((_, i) =>
+      `<div class="pdot ${i < state.replyPronounceCount ? "done" : ""}"></div>`
+    ).join("");
+    c.innerHTML = `
+      <div class="eyebrow">あなたの番です</div>
+      <h1>電話口で、何と答えますか？</h1>
+      <div class="memo-box"><b>電話メモ</b><br/>相手: ${state.challengeData.callerName || "不明"}${state.challengeData.callerCompany ? "（" + state.challengeData.callerCompany + "）" : ""}</div>
+      <div class="translation" style="text-align:left;">${state.challengeData.ja}</div>
+      <div class="desc">この内容を踏まえて、日本語で入力してください。電話で使える自然な英語に変換します。</div>
+      <textarea id="replyJaInput" rows="3" placeholder="例：申し訳ございませんが、担当者が不在です。メールでご連絡いただけますか？">${state.replyJa}</textarea>
+      ${state.replyError ? `<div class="error-box">${state.replyError}</div>` : ""}
+      ${state.replyLoading ? `<div class="spinner"></div>` : `<button class="primary" onclick="translateReply()">英語にする</button>`}
+      ${state.replyEn ? `
+        <div class="reply-en">${state.replyEn}</div>
+        ${state.replyAudioUrl ? `<button class="secondary" onclick="playReplyAudio()">🔊 お手本を聞く</button>` : ""}
+
+        <div class="pronounce-title" style="margin-top:18px;">この返答を声に出して${state.replyPronounceTotal}回言ってみましょう</div>
+        <div class="pdots">${dots}</div>
+        <div class="micbtn ${state.replyListening ? "listening" : ""}" onclick="startReplyPronounceAttempt()">
+          <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="${state.replyListening ? "#0B1220" : "#5EB1E0"}" stroke-width="2">
+            <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path>
+            <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
+            <line x1="12" y1="19" x2="12" y2="23"></line>
+            <line x1="8" y1="23" x2="16" y2="23"></line>
+          </svg>
+        </div>
+        <div class="attempt-msg">${state.replyAttemptMsg}</div>
+        <button class="primary" onclick="goToBossIntro()" ${replyComplete ? "" : "disabled"} style="margin-top:8px;">${replyComplete ? "次へ" : "あと" + (state.replyPronounceTotal - state.replyPronounceCount) + "回"}</button>
+      ` : `
+        <button class="secondary" onclick="goToBossIntro()" style="margin-top:16px;">スキップして次へ</button>
+      `}
+    `;
+  } else if (state.phase === "boss_intro") {
+    c.innerHTML = `
+      <div class="eyebrow">⚠ 上司が呼んでいます</div>
+      <div class="boss-card">
+        <div class="boss-name">課長</div>
+        <div class="boss-line">おい、さっきの電話、何だったんだ？</div>
+      </div>
+      <div class="desc" style="text-align:center;">落ち着いて、電話の内容を思い出してください。</div>
+      <button class="primary" onclick="goToBossQuestion()">報告する</button>
+    `;
+  } else if (state.phase === "boss_question") {
+    const q = state.challengeData.bossQuestions[state.bossQIdx];
+    c.innerHTML = `
+      <div class="eyebrow">上司の質問 ${state.bossQIdx + 1}/${state.challengeData.bossQuestions.length}</div>
+      <div class="boss-card"><div class="boss-name">課長</div><div class="boss-line">${q.q}</div></div>
+      <div>${q.options.map((opt,i)=>`<button class="option" onclick="answerBossQuestion(${i})" ${state.bossAnswered && !state.bossFeedback ? "disabled" : ""}>${opt}</button>`).join("")}</div>
+      ${state.bossFeedback ? `
+        <div class="qfeedback">${state.bossFeedback}</div>
+        <button class="secondary" onclick="playChallengeAudio()">🔊 電話を聞き直す</button>
+        <button class="primary" onclick="retryBossQuestion()">もう一度答える</button>
+      ` : ""}
+    `;
+  } else if (state.phase === "boss_speak") {
+    const q = state.challengeData.bossQuestions[state.bossQIdx];
+    const target = q.options[q.correctIndex];
+    const complete = state.bossSpeakCount >= state.bossSpeakTotal;
+    const dots = Array.from({ length: state.bossSpeakTotal }).map((_, i) => `<div class="pdot ${i < state.bossSpeakCount ? "done" : ""}"></div>`).join("");
+    c.innerHTML = `
+      <div class="eyebrow">課長にはっきり言いましょう</div>
+      <div class="boss-card"><div class="boss-line" style="font-size:17px;">${target}</div></div>
+      <div class="pronounce-title">${state.bossSpeakTotal}回、声に出して言いましょう</div>
+      <div class="pdots">${dots}</div>
+      <div class="micbtn ${state.bossListening ? "listening" : ""}" onclick="startBossSpeakAttempt()">
+        <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="${state.bossListening ? "#0B1220" : "#ff8080"}" stroke-width="2">
+          <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path>
+          <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
+          <line x1="12" y1="19" x2="12" y2="23"></line>
+          <line x1="8" y1="23" x2="16" y2="23"></line>
+        </svg>
+      </div>
+      <div class="attempt-msg">${state.bossAttemptMsg}</div>
+      <button class="primary" onclick="proceedAfterBossSpeak()" ${complete ? "" : "disabled"}>${complete ? "次へ" : "あと" + (state.bossSpeakTotal - state.bossSpeakCount) + "回"}</button>
+    `;
+  } else if (state.phase === "boss_directive") {
+    c.innerHTML = `
+      <div class="eyebrow">⚠ 上司の指示</div>
+      <div class="boss-card"><div class="boss-name">課長</div><div class="boss-line">よし、分かった。すぐ折り返しの電話をかけなさい！</div></div>
+      <button class="primary" onclick="goToCheatsheet()">了解しました</button>
+    `;
+  } else if (state.phase === "cheatsheet") {
+    c.innerHTML = `
+      <div class="eyebrow">同僚がメモをくれました</div>
+      <div class="desc" style="text-align:center;">「これ読みながら話せば大丈夫。落ち着いて。」</div>
+      <div class="cheat-card">${state.challengeData.callbackScript}</div>
+      <div class="desc" style="text-align:center;">この文を目で追って、心の準備をしてください。</div>
+      <div class="timer-big">${String(Math.floor(state.cheatTimer/60)).padStart(2,"0")}:${String(state.cheatTimer%60).padStart(2,"0")}</div>
+    `;
+  } else if (state.phase === "cheatsheet_ring") {
+    c.innerHTML = `
+      <div class="eyebrow">時間です</div>
+      <div class="desc" style="text-align:center;">折り返しの電話をかけましょう。カンニングペーパーを見ながらでOKです。</div>
+      <div class="cheat-card">${state.challengeData.callbackScript}</div>
+      ${state.challengeError ? `<div class="error-box">${state.challengeError}</div>` : ""}
+      <div class="phone-ring" onclick="startRecordingCall()">
+        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#FFB020" stroke-width="2">
+          <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"></path>
+        </svg>
+      </div>
+      <div class="desc" style="text-align:center;">タップして電話をかける（録音されます）</div>
+      <button class="secondary" onclick="completeWithoutRecording()">録音せずに、読み終わったら完了にする</button>
+    `;
+  } else if (state.phase === "recording") {
+    c.innerHTML = `
+      <div class="eyebrow">通話中（録音中）</div>
+      <div class="cheat-card">${state.challengeData.callbackScript}</div>
+      <div class="desc" style="text-align:center;">読み終えたら下のボタンをタップしてください。</div>
+      <button class="primary" onclick="stopRecordingCall()">🔴 読み終えた（録音を止める）</button>
+    `;
+  } else if (state.phase === "recording_playback") {
+    const praise = PRAISE_MESSAGES[Math.floor(Math.random()*PRAISE_MESSAGES.length)];
+    c.innerHTML = `
+      <div class="eyebrow">お疲れさまでした</div>
+      <h1>${state.recordedUrl ? "あなたの声を聞いてみましょう" : "対応完了です"}</h1>
+      ${state.recordedUrl ? `<button class="secondary" onclick="playRecordedAudio()">🔊 自分の録音を聞く</button>` : `<div class="tip">この端末では録音を再生できませんでしたが、実際に声に出して読めたことが大切です。</div>`}
+      <div class="praise-box">${praise}</div>
+      <button class="primary" onclick="finishChallenge()">結果を見る</button>
+    `;
+  } else if (state.phase === "challenge_result") {
+    const correctCount = state.challengeAnswers.filter(Boolean).length;
+    const total = state.challengeData.questions.length;
+    c.innerHTML = `
+      <div class="eyebrow">対応完了 · ${state.challengeData.callType}</div>
+      <div class="score">${correctCount} / ${total}</div>
+      <div class="summary-msg">お疲れさまでした。ここからは振り返り学習です。何度でも聞き直してOKです。</div>
+      <div class="playbtn ${state.speaking ? "speaking" : ""}" onclick="playChallengeAudio()">
+        <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="${state.speaking ? "#0B1220" : "#FFB020"}" stroke-width="2">
+          <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+          <path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+          <path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path>
+        </svg>
+      </div>
+      <div class="repeat" style="cursor:default;">🔁 何度でも聞き直せます</div>
+      <div class="memo-box"><b>電話メモ</b><br/>相手の名前: ${state.challengeData.callerName || "（不明）"}<br/>会社名: ${state.challengeData.callerCompany || "（個人）"}</div>
+      ${state.challengeData.fillers && state.challengeData.fillers.length ? `<div class="filler-list"><b style="color:var(--text);">聞き流していい「つなぎ言葉」</b><br/>${state.challengeData.fillers.map(f => `<span class="fp">${f.phrase}</span>：${f.note}`).join("<br/>")}</div>` : ""}
+      <div class="call-card"><div class="call-type">英文（オレンジ色＝聞き流していい部分）</div><div class="call-desc">${highlightFillers(state.challengeData.script, state.challengeData.fillers)}</div></div>
+      <div class="translation">${state.challengeData.ja}</div>
+      ${state.replyEn ? `<div class="desc">あなたの返答</div><div class="reply-en">${state.replyEn}</div>` : ""}
+      <button class="primary" onclick="state.phase='challenge_intro'; render();">履歴を見る</button>
+    `;
+  }
+}
+
+render();
+</script>
+</body>
+</html>
