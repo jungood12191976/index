@@ -298,6 +298,7 @@ let state = {
   mailReadDone: false,
   mailAnswered: false,
   mailSelectedIdx: -1,
+  mailAudioUrl: null,
   todayMorningContext: JSON.parse(sessionStorage.getItem("today_morning_context") || "null"),
   // 夜：癒しの時間（固定キャラクター・複数人・継続ストーリー）
   nightDate: localStorage.getItem("night_date") || "",
@@ -706,16 +707,20 @@ async function startTodayMail() {
 4. toneOptions: ["緊急・すぐ対応が必要","普通の依頼・急いでいない","営業・宣伝","無視してよい・アクション不要"]という4つの固定の選択肢（この順番のまま出力）
 5. explanation: なぜそのトーンだと判断できるか、本文中のどの表現がサインになっているかの日本語解説（3〜4行）
 6. signalPhrases: そのトーン判定の根拠になる本文中のフレーズを2〜4個、実際にbodyに含まれる形で
+7. bodyJa: bodyの全文を省略せず自然な日本語に翻訳したもの
+8. hardWords: bodyの中でやや難しい単語を2〜4個選び、それぞれ発音記号(ipa)と日本語の意味(ja)を付けてください
 
 出力するJSON形式（このスキーマに厳密に従い、JSON以外は一切出力しないこと）:
 {
   "from": "差出人",
   "subject": "件名",
   "body": "メール本文",
+  "bodyJa": "本文の全文日本語訳",
   "toneOptions": ["緊急・すぐ対応が必要","普通の依頼・急いでいない","営業・宣伝","無視してよい・アクション不要"],
   "correctIndex": 0,
   "explanation": "解説",
-  "signalPhrases": [ { "phrase": "ASAP", "note": "至急対応してほしいという緊急のサイン" } ]
+  "signalPhrases": [ { "phrase": "ASAP", "note": "至急対応してほしいという緊急のサイン" } ],
+  "hardWords": [ { "word": "invoice", "ipa": "ˈɪnvɔɪs", "ja": "請求書" } ]
 }`;
 
   try {
@@ -724,7 +729,15 @@ async function startTodayMail() {
     parsed.signalPhrases = (Array.isArray(parsed.signalPhrases) ? parsed.signalPhrases : []).filter(f =>
       f && f.phrase && parsed.body.toLowerCase().includes(String(f.phrase).toLowerCase())
     ).slice(0, 4);
+    if (!Array.isArray(parsed.hardWords)) parsed.hardWords = [];
     recordLearnedPhrases(parsed.signalPhrases);
+    recordLearnedPhrases(parsed.hardWords.map(w => ({ phrase: w.word, note: w.ja })));
+
+    try {
+      const voice = pickVoiceForAccent("American");
+      if (voice) state.mailAudioUrl = await generateTTS(parsed.body, voice);
+    } catch (e) { state.mailAudioUrl = null; }
+
     state.mailData = parsed;
     state.mailReadDone = false;
     state.mailAnswered = false;
@@ -751,6 +764,10 @@ async function startTodayMail() {
     stopLoadingTipLoop();
     render();
   }
+}
+
+function playMailAudio() {
+  smartPlay(state.mailAudioUrl, false);
 }
 
 function finishMailReadingEarly() {
@@ -803,7 +820,8 @@ function goToNightIntro() {
 async function getOrAssignNightVoice(character) {
   if (state.nightVoices[character.id]) {
     const v = getVoiceByKey(state.nightVoices[character.id]);
-    if (v) return v;
+    // 性別情報があるのに一致しない場合は、キャッシュを捨てて選び直す
+    if (v && (!character.gender || !v.gender || v.gender === character.gender)) return v;
   }
   const voice = pickVoiceForAccent(character.accentHint, character.gender);
   if (voice) {
@@ -1970,11 +1988,15 @@ function render() {
       ${state.mailAnswered ? `<button class="primary" onclick="finishMail()" style="margin-top:16px;">解説を見る</button>` : ""}
     `;
   } else if (state.phase === "mail_result") {
+    const hardWords = state.mailData.hardWords || [];
     c.innerHTML = `
       <div class="eyebrow">解説</div>
       <div class="translation">${state.mailData.explanation}</div>
       ${state.mailData.signalPhrases && state.mailData.signalPhrases.length ? `<div class="filler-list"><b style="color:var(--text);">判断のサインになったフレーズ</b><br/>${state.mailData.signalPhrases.map(f=>`<span class="fp">${f.phrase}</span>：${f.note}`).join("<br/>")}</div>` : ""}
+      ${state.mailAudioUrl ? `<button class="secondary" onclick="playMailAudio()">🔊 本文を聞く</button>${renderAudioControls()}` : ""}
       <div class="call-card"><div class="call-desc" style="color:var(--text);">${highlightFillers(state.mailData.body, state.mailData.signalPhrases)}</div></div>
+      ${state.mailData.bodyJa ? `<div class="translation" style="text-align:left;">${state.mailData.bodyJa}</div>` : ""}
+      ${hardWords.length ? `<div class="hardword-list"><b>難しい単語</b><br/>${hardWords.map(w=>`${w.word} /${w.ipa}/ − ${w.ja}`).join("<br/>")}</div>` : ""}
       <button class="primary" onclick="goToHub()">ホームへ戻る</button>
     `;
   } else if (state.phase === "night_intro") {
