@@ -151,6 +151,31 @@
   .night-card { background: linear-gradient(160deg, #1c1830, #16202E); border: 1px solid #7c6cff; border-radius: 14px; padding: 20px; margin-bottom: 16px; }
   .night-name { font-size: 20px; font-weight: bold; color: #b6a8ff; margin-bottom: 6px; }
   .night-line { font-size: 17px; line-height: 1.7; color: var(--text); }
+  .tip-card { background: var(--panelAlt); border: 1px dashed var(--sky); border-radius: 12px; padding: 16px; margin: 16px 0; }
+  .tip-label { font-size: 12px; color: var(--sky); margin-bottom: 8px; }
+  .tip-phrase { font-size: 18px; font-weight: bold; color: var(--amber); margin-bottom: 4px; }
+  .tip-note { font-size: 13px; color: var(--muted); }
+  /* 朝：集中できる青系 */
+  body.morning-mode { background: #071426; }
+  body.morning-mode .card { border-color: #2E6FBA; box-shadow: 0 0 40px rgba(46,111,186,0.25); }
+  body.morning-mode .header { background: #0C1F38; border-color: #2E6FBA; }
+  body.morning-mode .gate { color: #6FB2FF; }
+  body.morning-mode .eyebrow { color: #6FB2FF; }
+  /* 夜：やさしいパステルピンク */
+  body.night-mode { background: #241522; }
+  body.night-mode .card { background: #2E1B2E; border-color: #E8A6D0; box-shadow: 0 0 45px rgba(232,166,208,0.25); }
+  body.night-mode .header { background: #3A2038; border-color: #E8A6D0; }
+  body.night-mode .gate { color: #F3B8DE; }
+  body.night-mode .eyebrow { color: #F3B8DE; }
+  body.night-mode .content { color: #FBEAF5; }
+  body.night-mode .desc { color: #E3B9DA; }
+  body.night-mode button.primary { background: #E8A6D0; color: #2E1B2E; }
+  body.night-mode .night-card { background: linear-gradient(160deg, #3A2038, #2E1B2E); border-color: #F3B8DE; }
+  body.night-mode .option { background: #3A2038; border-color: #E8A6D0; color: #FBEAF5; }
+  body.night-mode .micbtn { border-color: #F3B8DE; }
+  body.night-mode .micbtn.listening { background: #F3B8DE; }
+  body.night-mode .pdot.done { background: #F3B8DE; }
+  .badge-count { display: inline-block; background: var(--amber); color: var(--bg); font-size: 12px; font-weight: bold; padding: 2px 8px; border-radius: 10px; margin-left: 8px; }
 </style>
 </head>
 <body>
@@ -258,6 +283,10 @@ let state = {
   isRecording: false,
   audioRate: 1,
   callbackAudioUrl: null,
+  // 豆知識（読み込み中に見せる、過去に学んだ表現）
+  learnedPhrases: JSON.parse(localStorage.getItem("learned_phrases") || "[]"),
+  loadingTip: null,
+  loadingTipInterval: null,
   // 昼：メールのトーン判定
   middayDate: localStorage.getItem("midday_date") || "",
   middayLog: JSON.parse(localStorage.getItem("midday_log") || "[]"),
@@ -269,30 +298,105 @@ let state = {
   mailReadDone: false,
   mailAnswered: false,
   mailSelectedIdx: -1,
-  // 夜：癒しの時間（固定キャラクター）
+  todayMorningContext: JSON.parse(sessionStorage.getItem("today_morning_context") || "null"),
+  // 夜：癒しの時間（固定キャラクター・複数人・継続ストーリー）
   nightDate: localStorage.getItem("night_date") || "",
   nightLog: JSON.parse(localStorage.getItem("night_log") || "[]"),
   nightVoices: JSON.parse(localStorage.getItem("night_voices") || "{}"),
+  nightHistory: JSON.parse(localStorage.getItem("night_history") || "{}"),
+  nightQueue: [],
+  nightQueueIdx: 0,
   nightCharacter: null,
   nightData: null,
+  nightAudioUrls: [],
   nightLoading: false,
   nightError: "",
-  nightReplyJa: "",
-  nightReplyEn: "",
-  nightReplyLoading: false,
-  nightReplyError: "",
-  nightReplyAudioUrl: null,
-  nightAudioUrl: null,
+  nightFriendIdx: 0,
+  nightMode: "friend",
+  nightSpeakCount: 0,
+  nightSpeakTotal: 2,
+  nightListening: false,
+  nightAttemptMsg: "",
+  nightRecFailStreak: 0,
+  nightUseSelfReport: false,
 };
 
 const NIGHT_CHARACTERS = [
-  { id: "ray",    name: "レイ",     role: "彼氏（台湾出身・アメリカ留学経験、今は台湾在住）", accentHint: "American", gender: "male",   relation: "boyfriend" },
-  { id: "laura",  name: "ローラ",   role: "友人（カリフォルニア在住、昔ホームステイを受け入れた家庭の娘）", accentHint: "American", gender: "female", relation: "friend" },
-  { id: "yuna",   name: "ユナ",     role: "友人（台湾人、夫の仕事で中国に駐在中）", accentHint: "Chinese", gender: "female", relation: "friend" },
-  { id: "usuda",  name: "薄田さん", role: "友人（夫の仕事でシンガポールに駐在中の日本人）", accentHint: "Singapore", gender: "female", relation: "friend" },
+  { id: "allen", name: "アレン",     role: "彼氏（台湾出身・アメリカ留学経験、今は台湾在住）", accentHint: "American", gender: "male",   relation: "boyfriend", weight: 3 },
+  { id: "laura", name: "ローラ",     role: "友人（高校時代のホームステイ先の娘。カリフォルニア州ラモナ在住。金髪でおしゃれ、彼氏あり。今どきでクールなアメリカ人）", accentHint: "American", gender: "female", relation: "friend", weight: 1 },
+  { id: "yuna",  name: "ユナ",       role: "友人（中国在住のジムインストラクター。美意識が高くアクティブ。彼氏も同じくジムインストラクター）", accentHint: "Chinese", gender: "female", relation: "friend", weight: 1 },
+  { id: "mika",  name: "ミカ",       role: "友人（台湾人、年下、甘えん坊で恥ずかしがりや。とても純粋で優しい性格）", accentHint: "Chinese", gender: "female", relation: "friend", weight: 1 },
+  { id: "usuda", name: "臼田さん",   role: "友人（シンガポールで独立してSNS運用の仕事をしている日本人女性。Instagramのリール動画を企業案件として制作。日々悩みながら子育てと両立している）", accentHint: "Singapore", gender: "female", relation: "friend", weight: 1 },
 ];
 
+function pickNightCharacterCount() { return Math.random() < 0.3 ? 2 : 1; }
+
+function pickNightCharacters(count) {
+  const weighted = [];
+  NIGHT_CHARACTERS.forEach(c => { for (let i = 0; i < (c.weight || 1); i++) weighted.push(c); });
+  const chosen = [];
+  const usedIds = new Set();
+  let guard = 0;
+  while (chosen.length < count && chosen.length < NIGHT_CHARACTERS.length && guard < 200) {
+    guard++;
+    const pick = weighted[Math.floor(Math.random() * weighted.length)];
+    if (!usedIds.has(pick.id)) { chosen.push(pick); usedIds.add(pick.id); }
+  }
+  return chosen;
+}
+
 function voiceKey(v) { return v.provider + "::" + v.voice_id; }
+
+// ===== 豆知識（読み込み中に見せる） =====
+const MOTIVATION_MESSAGES = [
+  "毎日ちょっとずつ、耳と口が英語に慣れています。",
+  "分からなかった部分こそ、次に伸びるポイントです。",
+  "昨日より今日、確実に前に進んでいます。",
+  "完璧じゃなくて大丈夫。声に出したことが財産です。",
+];
+
+function recordLearnedPhrase(phrase, note) {
+  if (!phrase) return;
+  const exists = state.learnedPhrases.some(p => p.phrase.toLowerCase() === String(phrase).toLowerCase());
+  if (!exists) {
+    state.learnedPhrases.unshift({ phrase: String(phrase), note: note || "" });
+    if (state.learnedPhrases.length > 200) state.learnedPhrases.length = 200;
+    localStorage.setItem("learned_phrases", JSON.stringify(state.learnedPhrases));
+  }
+}
+
+function recordLearnedPhrases(list) {
+  (list || []).forEach(f => { if (f && f.phrase) recordLearnedPhrase(f.phrase, f.note || f.ja || ""); });
+}
+
+function pickLoadingTip() {
+  if (state.learnedPhrases.length > 0) {
+    const p = state.learnedPhrases[Math.floor(Math.random() * state.learnedPhrases.length)];
+    return { kind: "phrase", phrase: p.phrase, note: p.note };
+  }
+  return { kind: "motivation", text: MOTIVATION_MESSAGES[Math.floor(Math.random() * MOTIVATION_MESSAGES.length)] };
+}
+
+function startLoadingTipLoop() {
+  state.loadingTip = pickLoadingTip();
+  if (state.loadingTipInterval) clearInterval(state.loadingTipInterval);
+  state.loadingTipInterval = setInterval(() => {
+    state.loadingTip = pickLoadingTip();
+    render();
+  }, 4000);
+}
+
+function stopLoadingTipLoop() {
+  if (state.loadingTipInterval) { clearInterval(state.loadingTipInterval); state.loadingTipInterval = null; }
+}
+
+function renderLoadingTip() {
+  if (!state.loadingTip) return "";
+  if (state.loadingTip.kind === "phrase") {
+    return `<div class="tip-card"><div class="tip-label">💡 この間こんな英語、学んだの覚えてますか？</div><div class="tip-phrase">${state.loadingTip.phrase}</div>${state.loadingTip.note ? `<div class="tip-note">${state.loadingTip.note}</div>` : ""}</div>`;
+  }
+  return `<div class="tip-card"><div class="tip-note" style="text-align:center;">${state.loadingTip.text}</div></div>`;
+}
 
 function buildCompanyContext() {
   const chars = state.companyCharacters.filter(c => c.name && c.role).map(c => `${c.name}（${c.role}）`).join("、");
@@ -476,7 +580,8 @@ function pickVoiceForAccent(hint, genderHint) {
   return pool[Math.floor(Math.random() * pool.length)];
 }
 
-async function callGeminiJSON(prompt, temperature) {
+async function callGeminiJSON(prompt, temperature, _retryCount) {
+  const retryCount = _retryCount || 0;
   let modelsToTry = ["gemini-2.5-flash", "gemini-flash-latest", "gemini-2.0-flash", "gemini-1.5-flash"];
   try {
     const listRes = await fetch(`https://generativelanguage.googleapis.com/v1beta/models?key=${encodeURIComponent(state.geminiApiKey)}`);
@@ -509,7 +614,21 @@ async function callGeminiJSON(prompt, temperature) {
   let text = data.candidates && data.candidates[0] && data.candidates[0].content && data.candidates[0].content.parts && data.candidates[0].content.parts[0] && data.candidates[0].content.parts[0].text;
   if (!text) throw new Error("応答が空でした");
   text = text.replace(/^```json/i, "").replace(/^```/, "").replace(/```$/, "").trim();
-  return JSON.parse(text);
+  try {
+    return JSON.parse(text);
+  } catch (parseErr) {
+    // 簡易修復：末尾の余計なカンマなどを除去して再トライ
+    try {
+      const repaired = text.replace(/,(\s*[}\]])/g, "$1");
+      return JSON.parse(repaired);
+    } catch (e2) {
+      if (retryCount < 1) {
+        // 1回だけ、生成そのものをやり直す
+        return callGeminiJSON(prompt, temperature, retryCount + 1);
+      }
+      throw new Error("AIの応答が不完全でした。もう一度お試しください");
+    }
+  }
 }
 
 // ===== 会社設定 =====
@@ -568,10 +687,17 @@ async function startTodayMail() {
   }
   state.mailLoading = true;
   state.mailError = "";
+  startLoadingTipLoop();
   render();
 
+  const morningCtx = (state.todayMorningContext && state.todayMorningContext.date === todayStr()) ? state.todayMorningContext : null;
+  const continuityChance = morningCtx ? Math.random() < 0.5 : false;
+  const continuityLine = continuityChance
+    ? `\n\n特別な指示：このメールは、今朝の電話（${morningCtx.callerName}さん、${morningCtx.callerCompany || "個人"}、内容: ${morningCtx.ja}）の**続き・フォローアップ**として書いてください。「今朝はお電話ありがとうございました」のような自然な書き出しにし、トーンは今朝の内容にふさわしいもの（緊急・普通の依頼など）にしてください。`
+    : "";
+
   const prompt = `あなたは英語教材のライターです。${buildCompanyContext()}
-この会社に届いた、ビジネスメールを1通作成してください。トーン（緊急／普通の依頼／営業宣伝／無視してよい連絡事項）のうちどれか1つをランダムに選び、そのトーンだと分かる典型的なサイン（緊急なら "ASAP" "urgent" など、営業なら誇張表現やリンク誘導など、無視可なら "FYI" "no action needed" など）を自然に含めてください。本文はやや長め（6〜10文）で、中学2年〜高校レベルの語彙を中心にしてください。
+この会社に届いた、ビジネスメールを1通作成してください。トーン（緊急／普通の依頼／営業宣伝／無視してよい連絡事項）のうちどれか1つをランダムに選び、そのトーンだと分かる典型的なサイン（緊急なら "ASAP" "urgent" など、営業なら誇張表現やリンク誘導など、無視可なら "FYI" "no action needed" など）を自然に含めてください。本文はやや長め（6〜10文）で、中学2年〜高校レベルの語彙を中心にしてください。${continuityLine}
 
 その後、以下を含めてください:
 1. from: 差出人名（会社名も含めてよい）
@@ -598,6 +724,7 @@ async function startTodayMail() {
     parsed.signalPhrases = (Array.isArray(parsed.signalPhrases) ? parsed.signalPhrases : []).filter(f =>
       f && f.phrase && parsed.body.toLowerCase().includes(String(f.phrase).toLowerCase())
     ).slice(0, 4);
+    recordLearnedPhrases(parsed.signalPhrases);
     state.mailData = parsed;
     state.mailReadDone = false;
     state.mailAnswered = false;
@@ -605,6 +732,7 @@ async function startTodayMail() {
     const readSeconds = Math.min(75, Math.max(30, Math.round(parsed.body.length / 8)));
     state.mailTimer = readSeconds;
     state.mailLoading = false;
+    stopLoadingTipLoop();
     state.phase = "mail_reading";
     render();
     if (state.mailTimerInterval) clearInterval(state.mailTimerInterval);
@@ -620,6 +748,7 @@ async function startTodayMail() {
   } catch (e) {
     state.mailError = e.message;
     state.mailLoading = false;
+    stopLoadingTipLoop();
     render();
   }
 }
@@ -657,7 +786,19 @@ function resetMailForTesting() {
 }
 
 // ===== 夜：癒しの時間 =====
-function goToNightIntro() { state.nightError = ""; state.phase = "night_intro"; render(); }
+function goToNightIntro() {
+  state.nightError = "";
+  // その夜の相手ぶれを、最初にホーム画面から入った時点で1回だけ決めておく（着信件数バッジ用）
+  const savedQueueDate = sessionStorage.getItem("night_queue_date");
+  if (savedQueueDate !== todayStr() || state.nightQueue.length === 0) {
+    const count = pickNightCharacterCount();
+    state.nightQueue = pickNightCharacters(count);
+    state.nightQueueIdx = 0;
+    sessionStorage.setItem("night_queue_date", todayStr());
+  }
+  state.phase = "night_intro";
+  render();
+}
 
 async function getOrAssignNightVoice(character) {
   if (state.nightVoices[character.id]) {
@@ -678,88 +819,197 @@ async function startTonightChat() {
     if (keyInput) { state.geminiApiKey = keyInput.value.trim(); localStorage.setItem("gemini_api_key", state.geminiApiKey); }
     if (!state.geminiApiKey) { state.nightError = "Gemini APIキーを入力してください"; render(); return; }
   }
+  await generateNightChatForCurrentCharacter();
+}
+
+async function generateNightChatForCurrentCharacter() {
   state.nightLoading = true;
   state.nightError = "";
+  startLoadingTipLoop();
   render();
 
-  const character = NIGHT_CHARACTERS[Math.floor(Math.random() * NIGHT_CHARACTERS.length)];
+  const character = state.nightQueue[state.nightQueueIdx];
   const relationLine = character.relation === "boyfriend"
     ? "恋人らしい親しみと優しさのある温かいトーンで、日常会話として自然な範囲にとどめてください（性的な内容や過度に踏み込んだ表現は一切含めないこと）。"
     : "親しい友人らしい、気さくでリラックスしたトーンにしてください。";
 
-  const prompt = `あなたは英語学習アプリのシナリオライターです。以下の人物になりきって、ユーザーに宛てた短いメッセージを作成してください。
+  const history = state.nightHistory[character.id];
+  const continuityLine = history
+    ? `\n\n継続設定：前回（${history.lastDate}）は「${history.topicSummary}」について話しました。今回はその後日談に自然に軽く触れつつ（「そういえばこの前の〜」のように）、新しい話題にも展開してください。`
+    : "";
+
+  const prompt = `あなたは英語学習アプリのシナリオライターです。以下の人物になりきって、ユーザーと3往復のカジュアルなチャットを作成してください。
 
 人物: ${character.name}（${character.role}）
-${relationLine}
+${relationLine}${continuityLine}
 
-内容は、今日あった他愛もない出来事や近況（天気、食べたもの、ちょっとした出来事など）を2〜4文で話し、最後に必ず「今日はどうだった？」のような、ユーザーに問いかける一文で終えてください。中学2年〜高校レベルの語彙を中心にした、自然な話し言葉にしてください。
+会話の構成:
+1. opener: 今日あった他愛もない出来事や近況を2〜3文で話しかける、最初のメッセージ
+2. turn1_options: openerへの返事として、ユーザーが選ぶ短い英文を2つ（どちらも自然で、方向性が少し違うもの。例: 一方は元気に、もう一方は落ち着いた感じ、など）
+3. reply1: どちらの返事にも自然につながる形で、${character.name}が話を広げる次のメッセージ（2〜3文、最後に軽い問いかけを含める）
+4. turn2_options: reply1への返事の選択肢2つ
+5. reply2: それに続く${character.name}のメッセージ（2〜3文、最後に軽い問いかけ）
+6. turn3_options: reply2への返事の選択肢2つ
+7. closing: 最後の返事を受けての、${character.name}からの短い締めのメッセージ（1〜2文、温かく会話を終える）
+8. topicSummary: 今回の会話の話題を10〜15文字程度の日本語で一言（次回の継続用）
+
+すべて中学2年〜高校レベルの語彙を中心にした、実際にチャットで使うような自然でカジュアルな英語にしてください。日本語訳（_jaという名前で各項目に対応）も付けてください。
 
 出力するJSON形式（このスキーマに厳密に従い、JSON以外は一切出力しないこと）:
 {
-  "message": "英文のメッセージ全体",
-  "ja": "日本語訳"
+  "opener": "...", "opener_ja": "...",
+  "turn1_options": ["...", "..."], "turn1_options_ja": ["...", "..."],
+  "reply1": "...", "reply1_ja": "...",
+  "turn2_options": ["...", "..."], "turn2_options_ja": ["...", "..."],
+  "reply2": "...", "reply2_ja": "...",
+  "turn3_options": ["...", "..."], "turn3_options_ja": ["...", "..."],
+  "closing": "...", "closing_ja": "...",
+  "topicSummary": "..."
 }`;
 
   try {
     const parsed = await callGeminiJSON(prompt, 1.05);
-    if (!parsed.message) throw new Error("生成内容が不完全でした。もう一度お試しください");
+    if (!parsed.opener || !Array.isArray(parsed.turn1_options)) throw new Error("生成内容が不完全でした。もう一度お試しください");
     const voice = await getOrAssignNightVoice(character);
     if (!voice) throw new Error("使える声がありません");
-    const audioUrl = await generateTTS(parsed.message, voice);
+
+    const friendLines = [parsed.opener, parsed.reply1, parsed.reply2, parsed.closing];
+    const audioUrls = [];
+    for (const line of friendLines) {
+      audioUrls.push(await generateTTS(line, voice));
+    }
 
     state.nightCharacter = character;
     state.nightData = parsed;
-    state.nightAudioUrl = audioUrl;
-    state.nightReplyJa = ""; state.nightReplyEn = ""; state.nightReplyError = ""; state.nightReplyAudioUrl = null;
+    state.nightAudioUrls = audioUrls;
+    state.nightFriendIdx = 0;
+    state.nightMode = "friend";
+    state.nightSpeakCount = 0;
+    state.nightAttemptMsg = "";
+    state.nightUseSelfReport = false;
+    state.nightRecFailStreak = 0;
     state.nightLoading = false;
+    stopLoadingTipLoop();
     state.phase = "night_message";
+    render();
+    setTimeout(() => smartPlay(state.nightAudioUrls[0], true), 200);
   } catch (e) {
     state.nightError = e.message;
     state.nightLoading = false;
+    stopLoadingTipLoop();
+    render();
   }
-  render();
 }
 
 function playNightAudio() {
-  smartPlay(state.nightAudioUrl, true);
+  smartPlay(state.nightAudioUrls[state.nightFriendIdx], true);
 }
 
-function goToNightReply() { state.phase = "night_reply"; render(); }
-
-async function translateNightReply() {
-  const ta = document.getElementById("nightReplyJaInput");
-  const ja = ta ? ta.value.trim() : "";
-  if (!ja) return;
-  state.nightReplyJa = ja;
-  state.nightReplyLoading = true;
-  state.nightReplyError = "";
-  render();
-  const prompt = `次の日本語を、親しい相手とのカジュアルなチャットで使う自然な英語に翻訳してください。丁寧すぎない、友人・恋人同士で使うような自然な言い方にしてください。日本語:「${ja}」\n\n出力形式（JSONのみ）:\n{ "en": "英語の翻訳" }`;
-  try {
-    const parsed = await callGeminiJSON(prompt, 0.8);
-    state.nightReplyEn = parsed.en || "";
-    if (!state.nightReplyEn) throw new Error("翻訳結果が空でした");
-    const replyVoice = pickVoiceForAccent("American");
-    if (replyVoice) { try { state.nightReplyAudioUrl = await generateTTS(state.nightReplyEn, replyVoice); } catch(e) {} }
-  } catch (e) {
-    state.nightReplyError = e.message;
+function nightProceedFromFriend() {
+  if (state.nightFriendIdx >= 3) {
+    // closingまで見終わった＝このキャラクターとの会話は終了
+    finishOneNightCharacter();
+    return;
   }
-  state.nightReplyLoading = false;
+  state.nightMode = "choice";
   render();
 }
 
-function playNightReplyAudio() {
-  smartPlay(state.nightReplyAudioUrl, false);
+function nightOptionSets() {
+  return [state.nightData.turn1_options, state.nightData.turn2_options, state.nightData.turn3_options];
+}
+function nightOptionSetsJa() {
+  return [state.nightData.turn1_options_ja, state.nightData.turn2_options_ja, state.nightData.turn3_options_ja];
 }
 
-function finishNight() {
+function pickNightOption(idx) {
+  const options = nightOptionSets()[state.nightFriendIdx];
+  state.nightPickedText = options[idx];
+  state.nightMode = "speak";
+  state.nightSpeakCount = 0;
+  state.nightAttemptMsg = "";
+  render();
+}
+
+function startNightSpeakAttempt() {
+  if (state.nightListening) return;
+  const target = state.nightPickedText;
+  if (state.nightUseSelfReport) { registerNightSpeakResult(true); return; }
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (!SR) { registerNightSpeakResult(true); return; }
+  let rec;
+  try { rec = new SR(); } catch (e) { registerNightSpeakResult(true); return; }
+  rec.lang = "en-US";
+  rec.interimResults = false;
+  rec.maxAlternatives = 1;
+  state.nightListening = true;
+  state.nightAttemptMsg = "聞いています…";
+  render();
+  let handled = false;
+  rec.onresult = (e) => {
+    handled = true;
+    state.nightRecFailStreak = 0;
+    const said = e.results[0][0].transcript;
+    const ratio = wordOverlapRatio(target, said);
+    registerNightSpeakResult(ratio >= 0.3, said);
+  };
+  rec.onerror = () => {
+    if (handled) return;
+    handled = true;
+    state.nightListening = false;
+    state.nightRecFailStreak += 1;
+    if (state.nightRecFailStreak >= 2) {
+      state.nightUseSelfReport = true;
+      state.nightAttemptMsg = "音声認識がうまく動かないため、次からはタップでカウントする方式に切り替えます";
+    } else {
+      state.nightAttemptMsg = "もう一度どうぞ";
+    }
+    render();
+  };
+  rec.onend = () => { state.nightListening = false; if (!handled) render(); };
+  try { rec.start(); } catch (e) { registerNightSpeakResult(true); }
+}
+
+function registerNightSpeakResult(pass) {
+  state.nightListening = false;
+  if (pass) {
+    state.nightSpeakCount = Math.min(state.nightSpeakTotal, state.nightSpeakCount + 1);
+    state.nightAttemptMsg = "✓ " + state.nightSpeakCount + "/" + state.nightSpeakTotal;
+    if (state.nightSpeakCount >= state.nightSpeakTotal) {
+      render();
+      setTimeout(() => {
+        state.nightFriendIdx += 1;
+        state.nightMode = "friend";
+        state.nightAttemptMsg = "";
+        render();
+        smartPlay(state.nightAudioUrls[state.nightFriendIdx], true);
+      }, 350);
+      return;
+    }
+  } else {
+    state.nightAttemptMsg = "もう一度お願いします";
+  }
+  render();
+}
+
+function finishOneNightCharacter() {
+  // 話題を継続ストーリー用に保存
+  state.nightHistory[state.nightCharacter.id] = { lastDate: todayStr(), topicSummary: state.nightData.topicSummary || "" };
+  localStorage.setItem("night_history", JSON.stringify(state.nightHistory));
+
   const entry = { date: todayStr(), character: state.nightCharacter.name };
   state.nightLog.unshift(entry);
   localStorage.setItem("night_log", JSON.stringify(state.nightLog));
-  state.nightDate = todayStr();
-  localStorage.setItem("night_date", state.nightDate);
-  state.phase = "night_done";
-  render();
+
+  state.nightQueueIdx += 1;
+  if (state.nightQueueIdx < state.nightQueue.length) {
+    generateNightChatForCurrentCharacter();
+  } else {
+    state.nightDate = todayStr();
+    localStorage.setItem("night_date", state.nightDate);
+    state.phase = "night_done";
+    render();
+  }
 }
 
 function resetNightVoices() {
@@ -771,6 +1021,8 @@ function resetNightVoices() {
 function resetNightForTesting() {
   state.nightDate = "";
   localStorage.removeItem("night_date");
+  sessionStorage.removeItem("night_queue_date");
+  state.nightQueue = [];
   render();
 }
 
@@ -784,6 +1036,7 @@ async function startTodayChallenge() {
 
   state.challengeLoading = true;
   state.challengeError = "";
+  startLoadingTipLoop();
   render();
 
   const callType = CALL_TYPES_BASE[Math.floor(Math.random() * CALL_TYPES_BASE.length)];
@@ -864,6 +1117,13 @@ async function startTodayChallenge() {
     if (!voice) throw new Error("使える声がありません");
     const audioUrl = await generateTTS(parsed.script, voice);
 
+    recordLearnedPhrases(parsed.fillers);
+    recordLearnedPhrases(parsed.callbackHardWords ? parsed.callbackHardWords.map(w => ({ phrase: w.word, note: w.ja })) : []);
+
+    // 昼のメールで「同じ相手からの続き」を演出できるように、今朝の相手情報を保存しておく
+    state.todayMorningContext = { callerName: parsed.callerName, callerCompany: parsed.callerCompany, callType: parsed.callType, ja: parsed.ja, date: todayStr() };
+    sessionStorage.setItem("today_morning_context", JSON.stringify(state.todayMorningContext));
+
     state.challengeData = parsed;
     state.challengeAudioUrl = audioUrl;
     state.challengePlaysUsed = 0;
@@ -871,10 +1131,12 @@ async function startTodayChallenge() {
     state.challengeAnswers = [];
     state.replyJa = ""; state.replyEn = ""; state.replyError = "";
     state.challengeLoading = false;
+    stopLoadingTipLoop();
     state.phase = "challenge_ringing";
   } catch (e) {
     state.challengeError = e.message;
     state.challengeLoading = false;
+    stopLoadingTipLoop();
   }
   render();
 }
@@ -940,7 +1202,7 @@ async function translateReply() {
     if (!state.replyEn) throw new Error("翻訳結果が空でした");
     state.replyPronounceCount = 0;
     state.replyAttemptMsg = "";
-    const voice = pickVoiceForAccent("American");
+    const voice = pickVoiceForAccent("American", "female");
     if (voice) {
       try { state.replyAudioUrl = await generateTTS(state.replyEn, voice); } catch(e) {}
     }
@@ -1046,30 +1308,57 @@ function registerReplyPronounceResult(pass, said) {
 }
 
 // ===== 緊張演出（電子音） =====
-function startTick() {
+function applyMoodMode() {
+  const tension = ["boss_intro","boss_question","boss_speak","boss_directive"].includes(state.phase);
+  const morning = !tension && ["challenge_intro","challenge_ringing","challenge_playing","challenge_questions","challenge_reply","cheatsheet","cheatsheet_ring","recording","recording_playback","challenge_result"].includes(state.phase);
+  const night = ["night_intro","night_message","night_done"].includes(state.phase);
+
+  document.body.classList.toggle("tension-mode", tension);
+  document.body.classList.toggle("morning-mode", morning);
+  document.body.classList.toggle("night-mode", night);
+
+  if (tension) { startAmbient("tick"); } else if (night) { startAmbient("chime"); } else { stopAmbient(); }
+}
+
+// ===== 環境音（電子音でループ） =====
+function startAmbient(kind) {
+  if (state.ambientKind === kind && state.ambientInterval) return;
+  stopAmbient();
   try {
     if (!state.tickAudioCtx) state.tickAudioCtx = new (window.AudioContext || window.webkitAudioContext)();
-    if (state.tickInterval) return;
-    state.tickInterval = setInterval(() => {
-      const ctx = state.tickAudioCtx;
-      const osc = ctx.createOscillator();
-      const gain = ctx.createGain();
-      osc.frequency.value = 880;
-      osc.type = "square";
-      gain.gain.setValueAtTime(0.06, ctx.currentTime);
-      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.08);
-      osc.connect(gain); gain.connect(ctx.destination);
-      osc.start(); osc.stop(ctx.currentTime + 0.08);
-    }, 800);
+    const ctx = state.tickAudioCtx;
+    state.ambientKind = kind;
+    if (kind === "tick") {
+      state.ambientInterval = setInterval(() => {
+        const osc = ctx.createOscillator(); const gain = ctx.createGain();
+        osc.frequency.value = 880; osc.type = "square";
+        gain.gain.setValueAtTime(0.06, ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.08);
+        osc.connect(gain); gain.connect(ctx.destination);
+        osc.start(); osc.stop(ctx.currentTime + 0.08);
+      }, 800);
+    } else if (kind === "chime") {
+      const notes = [523.25, 659.25, 784.0]; // C5 E5 G5 の優しい和音を順に
+      let i = 0;
+      state.ambientInterval = setInterval(() => {
+        const osc = ctx.createOscillator(); const gain = ctx.createGain();
+        osc.frequency.value = notes[i % notes.length]; osc.type = "sine";
+        gain.gain.setValueAtTime(0.0001, ctx.currentTime);
+        gain.gain.linearRampToValueAtTime(0.025, ctx.currentTime + 0.6);
+        gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 2.2);
+        osc.connect(gain); gain.connect(ctx.destination);
+        osc.start(); osc.stop(ctx.currentTime + 2.3);
+        i++;
+      }, 2800);
+    }
   } catch (e) {}
 }
-function stopTick() {
-  if (state.tickInterval) { clearInterval(state.tickInterval); state.tickInterval = null; }
+function stopAmbient() {
+  if (state.ambientInterval) { clearInterval(state.ambientInterval); state.ambientInterval = null; }
+  state.ambientKind = null;
 }
-function applyTensionMode() {
-  const tension = ["boss_intro","boss_question","boss_speak","boss_directive"].includes(state.phase);
-  document.body.classList.toggle("tension-mode", tension);
-}
+function startTick() { startAmbient("tick"); }
+function stopTick() { /* 互換のため残置：全体の停止はstopAmbient() */ stopAmbient(); }
 
 // ===== 怖い上司シーン =====
 function goToBossIntro() {
@@ -1311,7 +1600,7 @@ function highlightFillers(script, fillers) {
 }
 
 function render() {
-  applyTensionMode();
+  applyMoodMode();
   const c = document.getElementById("content");
 
   if (state.phase === "hub") {
@@ -1433,7 +1722,7 @@ function render() {
       ${state.challengeError ? `<div class="error-box">${state.challengeError}</div>` : ""}
       ${!state.geminiApiKey ? `<label class="field-label">Gemini APIキー（無料・カード不要）</label><input type="password" id="geminiKeyInputChallenge" placeholder="AIza..." value="" />` : ""}
       ${state.challengeLoading
-        ? `<div class="spinner"></div><div class="desc" style="text-align:center;">電話の内容を準備中…</div>`
+        ? `<div class="spinner"></div><div class="desc" style="text-align:center;">電話の内容を準備中…</div>${renderLoadingTip()}`
         : doneToday
           ? `<div class="tip">今日の対応は完了しました。また明日、新しい電話がかかってきます。</div><button class="secondary" onclick="resetChallengeForTesting()">（動作確認用）今日の分をリセットして再挑戦</button>`
           : !inWin
@@ -1645,7 +1934,7 @@ function render() {
       ${state.mailError ? `<div class="error-box">${state.mailError}</div>` : ""}
       ${!state.geminiApiKey ? `<label class="field-label">Gemini APIキー（無料・カード不要）</label><input type="password" id="geminiKeyInputMail" placeholder="AIza..." value="" />` : ""}
       ${state.mailLoading
-        ? `<div class="spinner"></div><div class="desc" style="text-align:center;">メールを準備中…</div>`
+        ? `<div class="spinner"></div><div class="desc" style="text-align:center;">メールを準備中…</div>${renderLoadingTip()}`
         : doneToday
           ? `<div class="tip">今日の分は完了しました。また明日。</div><button class="secondary" onclick="resetMailForTesting()">（動作確認用）リセットして再挑戦</button>`
           : !inWin
@@ -1691,15 +1980,16 @@ function render() {
   } else if (state.phase === "night_intro") {
     const doneToday = nightDoneToday();
     const inWin = nightInWindow();
+    const queueCount = state.nightQueue.length;
     let logHtml = state.nightLog.slice(0,8).map(l => `<div class="log-item"><div><div>${l.character}</div><div class="log-date">${l.date}</div></div></div>`).join("");
     c.innerHTML = `
       <div class="eyebrow">💜 夜のひととき（21:00〜23:00）</div>
-      <h1>誰かからメッセージが届いています</h1>
+      <h1>誰かからメッセージが届いています<span class="badge-count">📩 ${queueCount}件</span></h1>
       <div class="desc">仕事のことは忘れて、気軽にチャットしましょう。採点はありません。</div>
       ${state.nightError ? `<div class="error-box">${state.nightError}</div>` : ""}
       ${!state.geminiApiKey ? `<label class="field-label">Gemini APIキー（無料・カード不要）</label><input type="password" id="geminiKeyInputNight" placeholder="AIza..." value="" />` : ""}
       ${state.nightLoading
-        ? `<div class="spinner"></div><div class="desc" style="text-align:center;">メッセージを準備中…</div>`
+        ? `<div class="spinner"></div><div class="desc" style="text-align:center;">メッセージを準備中…</div>${renderLoadingTip()}`
         : doneToday
           ? `<div class="tip">今夜の分は完了しました。おやすみなさい。</div><button class="secondary" onclick="resetNightForTesting()">（動作確認用）リセットして再挑戦</button>`
           : !inWin
@@ -1710,33 +2000,58 @@ function render() {
       ${logHtml ? `<div class="desc" style="margin-top:20px;">履歴</div>${logHtml}` : ""}
     `;
   } else if (state.phase === "night_message") {
-    c.innerHTML = `
-      <div class="eyebrow">${state.nightCharacter.role}</div>
-      <div class="night-card">
-        <div class="night-name">${state.nightCharacter.name}</div>
-        <div class="night-line">${state.nightData.message}</div>
-      </div>
-      <button class="secondary" onclick="playNightAudio()">🔊 聞く</button>${renderAudioControls()}
-      <div class="translation">${state.nightData.ja}</div>
-      <button class="primary" onclick="goToNightReply()" style="margin-top:10px;">返事を書く</button>
-    `;
-  } else if (state.phase === "night_reply") {
-    c.innerHTML = `
-      <div class="eyebrow">${state.nightCharacter.name}に返事する</div>
-      <div class="desc">日本語で入力すると、自然な英語にします。</div>
-      <textarea id="nightReplyJaInput" rows="3" placeholder="例：今日は忙しかったけど楽しかったよ！あなたは？">${state.nightReplyJa}</textarea>
-      ${state.nightReplyError ? `<div class="error-box">${state.nightReplyError}</div>` : ""}
-      ${state.nightReplyLoading ? `<div class="spinner"></div>` : `<button class="primary" onclick="translateNightReply()">英語にする</button>`}
-      ${state.nightReplyEn ? `
-        <div class="reply-en">${state.nightReplyEn}</div>
-        ${state.nightReplyAudioUrl ? `<button class="secondary" onclick="playNightReplyAudio()">🔊 発音を聞く（任意）</button>` : ""}
-      ` : ""}
-      <button class="primary" onclick="finishNight()" style="margin-top:16px;">終了する</button>
-    `;
+    const friendLines = [state.nightData.opener, state.nightData.reply1, state.nightData.reply2, state.nightData.closing];
+    const friendLinesJa = [state.nightData.opener_ja, state.nightData.reply1_ja, state.nightData.reply2_ja, state.nightData.closing_ja];
+    const idx = state.nightFriendIdx;
+    const progress = `${state.nightQueueIdx + 1} / ${state.nightQueue.length} 人目`;
+
+    if (state.nightMode === "friend") {
+      const isLast = idx >= 3;
+      c.innerHTML = `
+        <div class="eyebrow">${state.nightCharacter.role}・${progress}</div>
+        <div class="night-card">
+          <div class="night-name">${state.nightCharacter.name}</div>
+          <div class="night-line">${friendLines[idx]}</div>
+        </div>
+        <button class="secondary" onclick="playNightAudio()">🔊 聞く</button>${renderAudioControls()}
+        <div class="translation">${friendLinesJa[idx] || ""}</div>
+        <button class="primary" onclick="nightProceedFromFriend()" style="margin-top:10px;">${isLast ? "会話を終える" : "返事する"}</button>
+      `;
+    } else if (state.nightMode === "choice") {
+      const options = nightOptionSets()[idx];
+      const optionsJa = nightOptionSetsJa()[idx];
+      c.innerHTML = `
+        <div class="eyebrow">${state.nightCharacter.name}に、何と返す？</div>
+        <div>${options.map((opt,i)=>`
+          <button class="option" onclick="pickNightOption(${i})" style="display:block;">
+            <div>${opt}</div>
+            <div style="font-size:12px; color:var(--muted); margin-top:4px;">${optionsJa ? optionsJa[i] : ""}</div>
+          </button>`).join("")}
+        </div>
+      `;
+    } else if (state.nightMode === "speak") {
+      const complete = state.nightSpeakCount >= state.nightSpeakTotal;
+      const dots = Array.from({ length: state.nightSpeakTotal }).map((_, i) => `<div class="pdot ${i < state.nightSpeakCount ? "done" : ""}"></div>`).join("");
+      c.innerHTML = `
+        <div class="eyebrow">声に出して伝えよう</div>
+        <div class="night-card"><div class="night-line" style="font-size:18px;">${state.nightPickedText}</div></div>
+        <div class="pdots">${dots}</div>
+        <div class="micbtn ${state.nightListening ? "listening" : ""}" onclick="startNightSpeakAttempt()">
+          <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="${state.nightListening ? "#2E1B2E" : "#F3B8DE"}" stroke-width="2">
+            <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path>
+            <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
+            <line x1="12" y1="19" x2="12" y2="23"></line>
+            <line x1="8" y1="23" x2="16" y2="23"></line>
+          </svg>
+        </div>
+        <div class="attempt-msg">${state.nightAttemptMsg}</div>
+        ${complete ? `<div class="desc" style="text-align:center;">次に進みます…</div>` : ""}
+      `;
+    }
   } else if (state.phase === "night_done") {
     c.innerHTML = `
       <div class="eyebrow">おやすみなさい</div>
-      <div class="praise-box">${state.nightCharacter.name}との会話、お疲れさまでした。ゆっくり休んでください。</div>
+      <div class="praise-box">今夜のチャット、お疲れさまでした。ゆっくり休んでください。</div>
       <button class="primary" onclick="goToHub()">ホームへ戻る</button>
     `;
   }
