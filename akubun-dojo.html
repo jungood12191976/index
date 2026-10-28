@@ -154,118 +154,118 @@ h1, h2, h3, p { margin: 0; }
 
   /* ---------- 18のルール(本の見出しに沿う) ---------- */
   var RULES = [
-    { n: 1, ch: 0, jp: "所有格は 's を付ける", en: "Form the possessive singular of nouns by adding 's." },
-    { n: 2, ch: 0, jp: "3つ以上の列挙は、最後の前にもコンマ", en: "In a series of three or more terms with a single conjunction, use a comma after each term except the last." },
-    { n: 3, ch: 0, jp: "挿入句はコンマで挟む", en: "Enclose parenthetic expressions between commas." },
-    { n: 4, ch: 0, jp: "等位節の前の接続詞にコンマ", en: "Place a comma before a conjunction introducing a co-ordinate clause." },
-    { n: 5, ch: 0, jp: "独立した節をコンマでつなぐな", en: "Do not join independent clauses by a comma." },
-    { n: 6, ch: 0, jp: "文を途中で切るな", en: "Do not break sentences in two." },
-    { n: 7, ch: 0, jp: "文頭の分詞句は主語に合わせる", en: "A participial phrase at the beginning of a sentence must refer to the grammatical subject." },
-    { n: 8, ch: 1, jp: "段落は1トピックに1つ", en: "Make the paragraph the unit of composition: one paragraph to each topic." },
-    { n: 9, ch: 1, jp: "段落は主題文で始める", en: "As a rule, begin each paragraph with a topic sentence; end it in conformity with the beginning." },
-    { n: 10, ch: 1, jp: "能動態を使う", en: "Use the active voice." },
-    { n: 11, ch: 1, jp: "肯定形で書く", en: "Put statements in positive form." },
-    { n: 12, ch: 1, jp: "具体的に書く", en: "Use definite, specific, concrete language." },
-    { n: 13, ch: 1, jp: "不要な語を省く", en: "Omit needless words." },
-    { n: 14, ch: 1, jp: "ゆるい文を続けない", en: "Avoid a succession of loose sentences." },
-    { n: 15, ch: 1, jp: "並列は同じ形で書く", en: "Express co-ordinate ideas in similar form." },
-    { n: 16, ch: 1, jp: "関連する語を近づける", en: "Keep related words together." },
-    { n: 17, ch: 1, jp: "要約では時制をそろえる", en: "In summaries, keep to one tense." },
-    { n: 18, ch: 1, jp: "強調したい語は文末に置く", en: "Place the emphatic words of a sentence at the end." }
+    { n: 1, ch: 0, jp: "「〜の」は 's を付けて表す", en: "Form the possessive singular of nouns by adding 's." },
+    { n: 2, ch: 0, jp: "3つ以上を並べるとき、最後の and の前にもコンマ", en: "In a series of three or more terms with a single conjunction, use a comma after each term except the last." },
+    { n: 3, ch: 0, jp: "文の途中の補足は、前後をコンマで挟む", en: "Enclose parenthetic expressions between commas." },
+    { n: 4, ch: 0, jp: "and や but で2つの文をつなぐとき、その前にコンマ", en: "Place a comma before a conjunction introducing a co-ordinate clause." },
+    { n: 5, ch: 0, jp: "2つの文を、コンマだけでつなぐな", en: "Do not join independent clauses by a comma." },
+    { n: 6, ch: 0, jp: "1つの文を、ピリオドで途中で切るな", en: "Do not break sentences in two." },
+    { n: 7, ch: 0, jp: "文の最初の「〜しながら」は、主語の動作にする", en: "A participial phrase at the beginning of a sentence must refer to the grammatical subject." },
+    { n: 8, ch: 1, jp: "段落は、話題1つにつき1つ", en: "Make the paragraph the unit of composition: one paragraph to each topic." },
+    { n: 9, ch: 1, jp: "段落は、いちばん言いたい文で始める", en: "As a rule, begin each paragraph with a topic sentence; end it in conformity with the beginning." },
+    { n: 10, ch: 1, jp: "「〜される」より「〜する」で書く", en: "Use the active voice." },
+    { n: 11, ch: 1, jp: "「〜ない」より、言い切る形で書く", en: "Put statements in positive form." },
+    { n: 12, ch: 1, jp: "ぼんやりより、具体的に書く", en: "Use definite, specific, concrete language." },
+    { n: 13, ch: 1, jp: "いらない言葉は削る", en: "Omit needless words." },
+    { n: 14, ch: 1, jp: "and や but で、文を延々とつなげない", en: "Avoid a succession of loose sentences." },
+    { n: 15, ch: 1, jp: "並べる内容は、同じ形でそろえる", en: "Express co-ordinate ideas in similar form." },
+    { n: 16, ch: 1, jp: "つながる言葉は、近くに置く", en: "Keep related words together." },
+    { n: 17, ch: 1, jp: "あらすじは、現在形か過去形のどちらかにそろえる", en: "In summaries, keep to one tense." },
+    { n: 18, ch: 1, jp: "いちばん言いたい言葉は、文の最後に置く", en: "Place the emphatic words of a sentence at the end." }
   ];
   var CHAPTERS = ["第2章 用法の基本ルール(1〜7)", "第3章 文章構成の原則(8〜18)"];
 
   /* ---------- 遊べるステージ(ルール1〜3) ---------- */
   var PLAY = {
     1: {
-      gloss: "名詞の単数形の所有格は、語尾がどんな子音でも 's を付けます。",
+      gloss: "「〜の」(持ち主を表す形)を作るときは、名前や名詞の後ろに 's を付けます。Charles のように s で終わる名前でも、Charles's と 's を付けます。",
       examples: ["Charles's friend", "Burns's poems", "the witch's malice"],
       notes: [
-        "例外は、-es / -is で終わる古代の固有名、Jesus'、for conscience' sake など。Achilles' heel のような形は、the heel of Achilles と言い換えるのが一般的です。",
-        "hers, its, theirs, yours, oneself にはアポストロフィを付けません。"
+        "例外: Achilles や Isis のように -es / -is で終わる古代の名前、Jesus、for conscience' sake は、' だけを付けます。ただし本は、Achilles' heel のような形は the heel of Achilles(アキレスのかかと)と言い換えるのが一般的だとしています。",
+        "hers, its, theirs, yours, oneself のように、もともと「〜のもの」を表す言葉には、' を付けません。it's は it is の短縮形で、別の意味です。"
       ],
       qs: [
         { q: "次の悪文を直してください。", bad: "Burns' poems are still read today.",
           ok: "Burns's poems are still read today.",
           ng: ["Burns poems are still read today.", "Burns's poem's are still read today."],
-          why: "単数名詞の所有格は、語尾の子音に関係なく 's を付けます(Charles's friend, Burns's poems)。Burns's は「バーンズィズ」と音が1つ増えます。" },
+          why: "「〜の」は 's を付けます。Burns のように s で終わる名前でも、Burns's poems(バーンズの詩)です。読むと「バーンズィズ」と音が1つ増えます。" },
         { q: "次の悪文を直してください。", bad: "The dog wagged it's tail.",
           ok: "The dog wagged its tail.",
           ng: ["The dog wagged its' tail.", "The dog wagged it tail."],
-          why: "its のような代名詞の所有格にはアポストロフィを付けません。it's は it is の短縮形です。its と it's は発音が同じなので、耳では区別できません。" },
-        { q: "本のルールに沿って正しい形を選んでください。", bad: "",
+          why: "its(それの)には ' を付けません。it's は it is の短縮形です。its と it's は同じ発音なので、耳では区別できません。" },
+        { q: "「チャールズの友だち」。本のルールでは、どれが正しい形?", bad: "",
           ok: "Charles's friend",
           ng: ["Charles' friend", "Charles friend's"],
-          why: "Charles のように s で終わる名詞でも、単数の所有格は 's です。" },
-        { q: "古代の固有名(-es で終わる)の所有格。本が一般的だとする書き方はどれ?", bad: "",
+          why: "Charles は s で終わりますが、「〜の」は 's を付けます。" },
+        { q: "「アキレスのかかと」。s で終わる古代の名前です。本が一般的だとする書き方はどれ?", bad: "",
           ok: "the heel of Achilles",
           ng: ["Achilles's heel", "Achilles heel'"],
-          why: "ancient proper names in -es and -is は例外で、Achilles' heel などは the heel of Achilles のように言い換えるのが一般的とされています。" },
+          why: "Achilles のような古代の名前は例外です。' だけを付ける形もありますが、本は the heel of Achilles と言い換えるのが一般的だとしています。" },
         { q: "次の悪文を直してください。", bad: "The book is her's, not mine.",
           ok: "The book is hers, not mine.",
           ng: ["The book is hers', not mine.", "The book is her, not mine."],
-          why: "hers, its, theirs, yours, oneself には、アポストロフィを付けません。" }
+          why: "hers は「彼女のもの」。hers, its, theirs, yours, oneself には ' を付けません。" }
       ]
     },
     2: {
-      gloss: "3つ以上を並べて接続詞が1つだけのとき、最後の項目を除くすべての後にコンマを付けます。つまり and の前にもコンマです。",
+      gloss: "3つ以上を並べて、最後を and か or でつなぐときは、その and / or の前にもコンマを付けます。",
       examples: ["red, white, and blue", "gold, silver, or copper", "He opened the letter, read it, and made a note of its contents."],
-      notes: ["会社名だけは、最後のコンマを省きます: Brown, Shipley & Co."],
+      notes: ["会社名だけは例外で、最後のコンマを付けません: Brown, Shipley & Co."],
       qs: [
         { q: "次の悪文を直してください。", bad: "The flag was red, white and blue.",
           ok: "The flag was red, white, and blue.",
           ng: ["The flag was red white, and blue.", "The flag was red, white and, blue."],
-          why: "red, white, and blue の形です。最後の接続詞の前にもコンマを付けます。" },
+          why: "red, white, and blue のように、and の前にもコンマを付けます。" },
         { q: "次の悪文を直してください。", bad: "Choose gold, silver or copper.",
           ok: "Choose gold, silver, or copper.",
           ng: ["Choose gold silver, or copper.", "Choose, gold, silver or copper."],
-          why: "gold, silver, or copper。or の前にもコンマを付けます。" },
+          why: "gold, silver, or copper。or の前にもコンマです。" },
         { q: "次の悪文を直してください。", bad: "He opened the letter, read it and made a note of its contents.",
           ok: "He opened the letter, read it, and made a note of its contents.",
           ng: ["He opened the letter read it, and made a note of its contents.", "He opened, the letter, read it and made a note of its contents."],
-          why: "動作を3つ並べた列挙です。read it の後にもコンマを付けます。" },
+          why: "動作を3つ並べています。read it の後ろ、and の前にもコンマを付けます。" },
         { q: "会社名の書き方。本のルールに沿って選んでください。", bad: "",
           ok: "Brown, Shipley & Co.",
           ng: ["Brown, Shipley, & Co.", "Brown Shipley, & Co."],
-          why: "会社名では、最後のコンマを省きます。" },
+          why: "会社名だけは例外で、最後のコンマを付けません。" },
         { q: "次の悪文を直してください。", bad: "We packed tents, stoves and lanterns.",
           ok: "We packed tents, stoves, and lanterns.",
           ng: ["We packed tents stoves, and lanterns.", "We packed, tents, stoves and lanterns."],
-          why: "tents, stoves, and lanterns。3つの列挙は、最後の and の前にもコンマです。" }
+          why: "tents, stoves, and lanterns。3つ並べるときは、and の前にもコンマです。" }
       ]
     },
     3: {
-      gloss: "文の流れを少し中断する挿入句は、前後をコンマで挟みます。片方だけ打つのは誤りです。",
+      gloss: "文の途中に補足の言葉を入れるときは、その前後をコンマで挟みます。片方だけにコンマを付けるのは、まちがいです。",
       examples: [
         "The best way to see a country, unless you are pressed for time, is to travel on foot.",
         "The audience, which had at first been indifferent, became more and more interested.",
         "The candidate who best meets these requirements will obtain the place."
       ],
       notes: [
-        "必ず挿入扱いになるもの: 日付の年(April 6, 1917.)、曜日に続く日付、etc. と jr.、非制限的関係節。",
-        "どれか特定するための節(制限的関係節)は、コンマで挟みません。3つ目の例がそれです。"
+        "いつも補足として挟むもの: 日付の年(April 6, 1917)、曜日の後の日付、etc. と jr.、そして who や which で始まる補足の説明(2つ目の例)。",
+        "ただし、「どの人か」を決めるための who の説明は、挟みません(3つ目の例)。その説明がないと、誰のことか決まらないからです。"
       ],
       qs: [
         { q: "次の悪文を直してください。", bad: "Marjorie's husband, Colonel Nelson paid us a visit yesterday.",
           ok: "Marjorie's husband, Colonel Nelson, paid us a visit yesterday.",
           ng: ["Marjorie's husband Colonel Nelson, paid us a visit yesterday.", "Marjorie's husband, Colonel Nelson paid us a visit, yesterday."],
-          why: "Colonel Nelson は挿入句なので、前後をコンマで挟みます。片方だけは誤りです。" },
+          why: "Colonel Nelson は補足なので、前後をコンマで挟みます。片方だけはまちがいです。" },
         { q: "次の悪文を直してください。", bad: "My brother you will be pleased to hear, is now in perfect health.",
           ok: "My brother, you will be pleased to hear, is now in perfect health.",
           ng: ["My brother, you will be pleased to hear is now in perfect health.", "My brother you, will be pleased to hear, is now in perfect health."],
-          why: "you will be pleased to hear が挿入句です。前後にコンマを置きます。" },
-        { q: "どの候補かを特定する節です。正しい形はどれ?", bad: "",
+          why: "you will be pleased to hear が補足です。前後にコンマを置きます。" },
+        { q: "「どの候補者か」を決める説明です。正しい形はどれ?", bad: "",
           ok: "The candidate who best meets these requirements will obtain the place.",
           ng: ["The candidate, who best meets these requirements, will obtain the place.", "The candidate who best meets these requirements, will obtain the place."],
-          why: "who 以下が「どの候補か」を特定しているので、コンマで挟みません(制限的関係節)。" },
+          why: "who 以下は「どの候補者か」を決める説明なので、コンマで挟みません。" },
         { q: "次の悪文を直してください。", bad: "He was born on April 6 1917 in Ohio.",
           ok: "He was born on April 6, 1917, in Ohio.",
           ng: ["He was born on April 6, 1917 in Ohio.", "He was born on April, 6 1917, in Ohio."],
-          why: "日付の年は挿入扱いです。文中では、年の後にもコンマを付けます。" },
+          why: "日付の年も補足として扱います。文の途中では、年の後ろにもコンマを付けます。" },
         { q: "次の悪文を直してください。", bad: "The audience which had at first been indifferent became more and more interested.",
           ok: "The audience, which had at first been indifferent, became more and more interested.",
           ng: ["The audience which had at first been indifferent, became more and more interested.", "The audience, which had at first been indifferent became more and more interested."],
-          why: "聴衆はすでに特定済みで、which 以下は補足です(非制限的関係節)。コンマで挟みます。" }
+          why: "どの聴衆かはもう分かっていて、which 以下は補足の説明です。だからコンマで挟みます。" }
       ]
     }
   };
