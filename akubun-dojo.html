@@ -4,34 +4,44 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="color-scheme" content="light dark">
+<meta name="theme-color" content="#fff8fb">
 <title>悪文なおし道場</title>
 <meta name="claude:viewport-fit-sides" content="cover">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&family=Zen+Kaku+Gothic+New:wght@400;500;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&family=DotGothic16&family=Zen+Kaku+Gothic+New:wght@400;500;700&family=Zen+Maru+Gothic:wght@400;500;700&display=swap">
 <style>
 /* Layout: 原稿用紙に赤鉛筆を入れる感覚。白い紙面、大きなタイプライター書体の英文、余白の赤い校正線。大胆さは「習得」スタンプ一点に集中させる。 */
 :root {
-  --bg: #ffffff;
+  --bg: #fff8fb;
   --paper: #ffffff;
-  --ink: #1a2230;
-  --ink-2: #566073;
-  --line: #dde2ea;
-  --pencil: #c92f2a;
-  --pencil-soft: #fbeceb;
-  --ok: #1d7a4f;
-  --ok-soft: #e7f4ec;
-  --f-ui: "Zen Kaku Gothic New", "Hiragino Sans", "Yu Gothic", sans-serif;
+  --ink: #4a3d57;
+  --ink-2: #75688a;
+  --line: #f1dff0;
+  --pencil: #d6578a;
+  --pencil-soft: #ffe8f1;
+  --ok: #2f9e7a;
+  --ok-soft: #e2f7ee;
+  --pink: #ffc4da;
+  --lav: #dccfff;
+  --mint: #c9f1e2;
+  --btn-text: #4a3d57;
+  --win-bg: #0a1030;
+  --win-bd: #ffffff;
+  --f-ui: "Zen Maru Gothic", "Zen Kaku Gothic New", "Hiragino Maru Gothic ProN", "Hiragino Sans", "Yu Gothic", sans-serif;
   --f-type: "Courier Prime", "Courier New", monospace;
+  --f-dot: "DotGothic16", "Zen Kaku Gothic New", "Hiragino Sans", sans-serif;
 }
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
-    --bg: #11151b; --paper: #171c24; --ink: #e8ecf2; --ink-2: #9aa5b6; --line: #2a323e;
-    --pencil: #ff7a72; --pencil-soft: #3a1f1e; --ok: #5fd09a; --ok-soft: #17301f;
+    --bg: #1f1a2b; --paper: #2a2338; --ink: #f4edff; --ink-2: #b9aed1; --line: #3f3553;
+    --pencil: #ff8fb8; --pencil-soft: #44283a; --ok: #7be0b8; --ok-soft: #1f3a33;
+    --win-bg: #0a1030; --win-bd: #ffffff;
     color-scheme: dark;
   }
 }
 :root[data-theme="dark"] {
-  --bg: #11151b; --paper: #171c24; --ink: #e8ecf2; --ink-2: #9aa5b6; --line: #2a323e;
-  --pencil: #ff7a72; --pencil-soft: #3a1f1e; --ok: #5fd09a; --ok-soft: #17301f;
+  --bg: #1f1a2b; --paper: #2a2338; --ink: #f4edff; --ink-2: #b9aed1; --line: #3f3553;
+  --pencil: #ff8fb8; --pencil-soft: #44283a; --ok: #7be0b8; --ok-soft: #1f3a33;
+  --win-bg: #0a1030; --win-bd: #ffffff;
   color-scheme: dark;
 }
 * { box-sizing: border-box; }
@@ -51,18 +61,32 @@ h1, h2, h3, p { margin: 0; }
 .small { font-size: 17px; color: var(--ink-2); }
 .ico { flex: none; display: block; }
 
+/* ラブとメッセージ窓 */
+.love { image-rendering: pixelated; image-rendering: crisp-edges; width: 84px; height: 84px; flex: none; display: block; }
+.love.bob { animation: bob 1s steps(1, end) infinite; }
+@keyframes bob { 0% { transform: translateY(0); } 50% { transform: translateY(-4px); } 100% { transform: translateY(0); } }
+@media (prefers-reduced-motion: reduce) { .love.bob { animation: none; } }
+.stage { display: flex; gap: 10px; align-items: center; }
+.win { flex: 1; min-width: 0; background: var(--win-bg); color: #fff; border: 3px solid var(--win-bd); border-radius: 14px; box-shadow: 0 0 0 3px #f3a9c6; padding: 10px 14px 12px; margin: 6px 7px 12px 14px; position: relative; }
+.win::before, .win::after { content: ""; position: absolute; top: 50%; width: 0; height: 0; border-style: solid; border-color: transparent; }
+.win::before { left: -19px; border-width: 10px 16px 10px 0; border-right-color: var(--win-bd); margin-top: -10px; }
+.win::after { left: -13px; border-width: 8px 13px 8px 0; border-right-color: var(--win-bg); margin-top: -8px; }
+.win .who { font-family: var(--f-dot); font-size: 15px; color: #ffd966; letter-spacing: .1em; display: block; }
+.win p { font-family: var(--f-dot); font-size: 22px; line-height: 1.55; }
+
 /* home */
-.title { font-size: 38px; font-weight: 700; letter-spacing: .02em; line-height: 1.25; text-wrap: balance; }
-.sub { color: var(--ink-2); margin-top: 6px; font-size: 18px; }
+.title { color: var(--pencil); text-align: center; margin-top: 14px; font-size: 38px; font-weight: 700; letter-spacing: .02em; line-height: 1.25; text-wrap: balance; }
+.sub { text-align: center; color: var(--ink-2); margin-top: 6px; font-size: 18px; }
 .strip-head { display: flex; justify-content: space-between; align-items: baseline; margin: 22px 0 8px; }
 .strip { display: grid; grid-template-columns: repeat(9, 1fr); gap: 5px; }
-.cell { aspect-ratio: 1; min-width: 0; display: grid; place-items: center; border: 1.5px dashed var(--line); border-radius: 3px; font-family: var(--f-type); font-size: 22px; color: var(--ink-2); background: transparent; padding: 0; }
+.cell { aspect-ratio: 1; min-width: 0; display: grid; place-items: center; border: 1.5px dashed var(--line); border-radius: 10px; font-family: var(--f-type); font-size: 22px; color: var(--ink-2); background: transparent; padding: 0; }
 .cell.play { border: 1.5px solid var(--pencil); color: var(--pencil); font-weight: 700; }
-.cell.done { background: var(--ink); border-color: var(--ink); color: var(--bg); font-weight: 700; }
+.cell.done { background: var(--pink); border-color: var(--pink); color: var(--btn-text); font-weight: 700; }
 .cta-row { display: grid; gap: 10px; margin-top: 20px; }
-.btn { border: 1.5px solid var(--ink); background: var(--ink); color: var(--bg); padding: 18px 18px; border-radius: 4px; font-weight: 700; font-size: 22px; text-align: left; display: flex; justify-content: space-between; gap: 12px; align-items: center; }
-.btn.alt { background: transparent; color: var(--ink); }
-.btn.red { background: var(--pencil); border-color: var(--pencil); color: var(--bg); }
+.btn { border: 2px solid var(--lav); background: var(--lav); color: var(--btn-text); padding: 18px 18px; border-radius: 16px; font-weight: 700; font-size: 22px; text-align: left; display: flex; justify-content: space-between; gap: 12px; align-items: center; }
+.btn.alt { background: var(--paper); color: var(--ink); border-color: var(--lav); }
+a.btn { text-decoration: none; }
+.btn.red { background: var(--pink); border-color: var(--pink); color: var(--btn-text); }
 .btn small { font-weight: 400; opacity: .9; font-size: 17px; }
 .chap { margin: 28px 0 6px; font-size: 17px; color: var(--ink-2); letter-spacing: .08em; border-bottom: 1px solid var(--line); padding-bottom: 6px; }
 .row { width: 100%; display: grid; grid-template-columns: 2.2em minmax(0, 1fr) auto; gap: 10px; align-items: start; padding: 14px 0; border: 0; border-bottom: 1px solid var(--line); background: transparent; text-align: left; }
@@ -71,15 +95,15 @@ h1, h2, h3, p { margin: 0; }
 .row .en { font-family: var(--f-type); font-size: 17px; color: var(--ink-2); line-height: 1.45; margin-top: 2px; overflow-wrap: anywhere; display: inline-block; }
 .row.lock { cursor: default; }
 .row.lock .no, .row.lock .jp { color: var(--ink-2); }
-.badge { font-size: 16px; border: 1px solid var(--line); border-radius: 3px; padding: 1px 8px; white-space: nowrap; color: var(--ink-2); margin-top: 4px; }
+.badge { font-size: 16px; border: 1px solid var(--line); border-radius: 10px; padding: 1px 8px; white-space: nowrap; color: var(--ink-2); margin-top: 4px; }
 .badge.done { border-color: var(--ok); color: var(--ok); background: var(--ok-soft); font-weight: 700; }
 .badge.go { border-color: var(--pencil); color: var(--pencil); }
 
 /* top bar */
 .bar { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; }
-.back { border: 1.5px solid var(--line); background: transparent; border-radius: 4px; padding: 8px 14px; font-size: 18px; white-space: nowrap; }
+.back { border: 2px solid var(--lav); background: var(--paper); border-radius: 14px; padding: 8px 14px; font-size: 18px; white-space: nowrap; }
 .segs { flex: 1; display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; gap: 4px; }
-.seg { height: 7px; border-radius: 2px; background: var(--line); }
+.seg { height: 8px; border-radius: 4px; background: var(--line); }
 .seg.now { background: var(--ink-2); }
 .seg.ok { background: var(--ok); }
 .seg.ng { background: var(--pencil); }
@@ -89,7 +113,7 @@ h1, h2, h3, p { margin: 0; }
 .rulehead { font-family: var(--f-type); color: var(--pencil); font-weight: 700; font-size: 20px; letter-spacing: .12em; }
 .ruleen { font-family: var(--f-type); font-size: 27px; line-height: 1.45; margin-top: 8px; font-weight: 700; overflow-wrap: anywhere; }
 .rulejp { margin-top: 14px; font-size: 23px; font-weight: 500; text-wrap: pretty; }
-.manu { border-left: 3px solid var(--pencil); background: var(--paper); padding: 8px 0 8px 14px; margin-top: 18px; display: grid; gap: 12px; }
+.manu { border-left: 3px solid var(--pencil); background: var(--paper); padding: 10px 10px 10px 14px; border-radius: 0 14px 14px 0; margin-top: 18px; display: grid; gap: 12px; }
 .tag { font-size: 16px; color: var(--ink-2); letter-spacing: .08em; display: block; }
 .say { display: flex; gap: 10px; align-items: flex-start; width: 100%; text-align: left; background: transparent; border: 0; padding: 0; user-select: none; -webkit-user-select: none; -webkit-touch-callout: none; touch-action: manipulation; }
 .say .sent { font-family: var(--f-type); font-size: 26px; line-height: 1.55; overflow-wrap: anywhere; min-width: 0; flex: 1; }
@@ -106,7 +130,7 @@ h1, h2, h3, p { margin: 0; }
 .hint { margin-top: 18px; font-size: 19px; color: var(--ink-2); display: flex; gap: 8px; align-items: center; }
 .hint .ico { color: var(--pencil); }
 .opts { display: grid; gap: 12px; margin-top: 12px; }
-.opt { position: relative; overflow: hidden; width: 100%; display: grid; grid-template-columns: 1.5em minmax(0, 1fr) auto; gap: 10px; align-items: start; text-align: left; padding: 18px 14px 20px; border: 1.5px solid var(--line); border-radius: 4px; background: var(--paper); user-select: none; -webkit-user-select: none; -webkit-touch-callout: none; touch-action: manipulation; }
+.opt { position: relative; overflow: hidden; width: 100%; display: grid; grid-template-columns: 1.5em minmax(0, 1fr) auto; gap: 10px; align-items: start; text-align: left; padding: 18px 14px 20px; border: 2px solid var(--lav); border-radius: 16px; background: var(--paper); user-select: none; -webkit-user-select: none; -webkit-touch-callout: none; touch-action: manipulation; }
 .opt .l { font-family: var(--f-type); font-weight: 700; font-size: 26px; color: var(--ink-2); line-height: 1.5; }
 .opt .t { font-family: var(--f-type); font-size: 26px; line-height: 1.5; overflow-wrap: anywhere; }
 .opt .m { font-weight: 700; font-size: 17px; white-space: nowrap; padding-top: 4px; }
@@ -118,17 +142,17 @@ h1, h2, h3, p { margin: 0; }
 .opt.right .m { color: var(--ok); }
 .opt.wrong { border-color: var(--pencil); background: var(--pencil-soft); }
 .opt.wrong .m { color: var(--pencil); }
-.fb { margin-top: 18px; padding: 14px 16px; border-radius: 4px; background: var(--paper); border: 1.5px solid var(--line); }
+.fb { margin-top: 18px; padding: 14px 16px; border-radius: 16px; background: var(--paper); border: 1.5px solid var(--line); }
 .fb .verdict { font-weight: 700; font-size: 26px; }
 .fb .verdict.ok { color: var(--ok); }
 .fb .verdict.ng { color: var(--pencil); }
 .fb .rtag { font-family: var(--f-type); font-weight: 700; color: var(--pencil); font-size: 17px; letter-spacing: .1em; margin-top: 8px; }
 .fb p.why { margin-top: 4px; font-size: 21px; text-wrap: pretty; }
-.next { margin-top: 16px; }
+.next { margin-top: 16px; width: 100%; }
 
 /* result */
 .score { font-family: var(--f-type); font-weight: 700; font-size: 68px; line-height: 1.1; }
-.stamp { display: inline-block; border: 3.5px solid var(--pencil); color: var(--pencil); padding: 2px 16px; font-weight: 700; letter-spacing: .25em; transform: rotate(-5deg); border-radius: 4px; font-size: 30px; margin: 14px 0 6px; }
+.stamp { display: inline-block; border: 3.5px solid var(--pencil); color: var(--pencil); padding: 2px 16px; font-weight: 700; letter-spacing: .25em; transform: rotate(-5deg); border-radius: 14px; font-size: 30px; margin: 14px 0 6px; }
 .stamp.soft { border-color: var(--ink-2); color: var(--ink-2); font-size: 22px; }
 .miss { margin-top: 20px; display: grid; gap: 16px; }
 .miss .item { border-left: 3px solid var(--pencil); padding-left: 14px; }
@@ -175,7 +199,7 @@ h1, h2, h3, p { margin: 0; }
   ];
   var CHAPTERS = ["第2章 用法の基本ルール(1〜7)", "第3章 文章構成の原則(8〜18)"];
 
-  /* ---------- 遊べるステージ(ルール1〜3) ---------- */
+  /* ---------- 遊べるステージ(ルール1〜18) ---------- */
   var PLAY = {
     1: {
       gloss: "「〜の」(持ち主を表す形)を作るときは、名前や名詞の後ろに 's を付けます。Charles のように s で終わる名前でも、Charles's と 's を付けます。",
@@ -267,6 +291,411 @@ h1, h2, h3, p { margin: 0; }
           ng: ["The audience which had at first been indifferent, became more and more interested.", "The audience, which had at first been indifferent became more and more interested."],
           why: "どの聴衆かはもう分かっていて、which 以下は補足の説明です。だからコンマで挟みます。" }
       ]
+    },
+    4: {
+      gloss: "2つの文を and / but / or / for などでつなぐときは、その接続の言葉の前にコンマを置きます。",
+      examples: ["The situation is perilous, but there is still one chance of escape.", "Love barked, and Max ran away.", "Love was tired, for she had run all day."],
+      notes: ["主語が同じで、動詞だけがつながる文には、コンマは付けません。例: Love barked and ran away.", "2つ目の文が and や but ではなく、however や therefore のような副詞で始まるときは、コンマでなくセミコロン(;)を使います(ルール5)。"],
+      qs: [
+        { q: "次の悪文を直してください。", bad: "The sun was shining but the wind was cold.",
+          ok: "The sun was shining, but the wind was cold.",
+          ng: ["The sun was shining but, the wind was cold.", "The sun was shining but the wind, was cold."],
+          why: "2つの文(The sun was shining / the wind was cold)を but でつないでいます。but の前にコンマを置きます。" },
+        { q: "次の悪文を直してください。", bad: "Mom opened the door and Love ran outside.",
+          ok: "Mom opened the door, and Love ran outside.",
+          ng: ["Mom opened, the door and Love ran outside.", "Mom opened the door and, Love ran outside."],
+          why: "Mom opened the door と Love ran outside は、それぞれ主語のある2つの文です。and の前にコンマを置きます。" },
+        { q: "主語が同じで、動詞だけがつながる文です。コンマが要らない(正しい)のはどれ?", bad: "",
+          ok: "Love barked and ran away.",
+          ng: ["Love barked, and ran away.", "Love, barked and ran away."],
+          why: "2つ目の ran away には主語がありません。文が2つではなく、動詞が2つつながっているだけなので、コンマは付けません。" },
+        { q: "次の悪文を直してください。", bad: "Love was tired for she had run all day.",
+          ok: "Love was tired, for she had run all day.",
+          ng: ["Love was tired for, she had run all day.", "Love was tired for she had, run all day."],
+          why: "for(というのは〜だから)で2つ目の文を始めるときも、for の前にコンマを置きます。" },
+        { q: "次の悪文を直してください。", bad: "I wanted to play but it was raining.",
+          ok: "I wanted to play, but it was raining.",
+          ng: ["I wanted to play but, it was raining.", "I wanted, to play but it was raining."],
+          why: "I wanted to play と it was raining の2つの文を、but でつないでいます。but の前にコンマを置きます。" }
+      ]
+    },
+    5: {
+      gloss: "完全な2つの文を、コンマだけでつないではいけません。セミコロン(;)でつなぐか、ピリオドで2つの文に分けます。",
+      examples: ["Stevenson's romances are entertaining; they are full of exciting adventures.", "It is nearly half past five; we cannot reach town before dark.", "The rain stopped; however, the road was still wet."],
+      notes: ["2つの文の間に and や but を入れるなら、コンマでかまいません(ルール4)。", "とても短くて同じ形の文や、くだけた会話では、コンマでつなぐこともあります。"],
+      qs: [
+        { q: "次の悪文を直してください。", bad: "It is nearly half past five, we cannot reach town before dark.",
+          ok: "It is nearly half past five; we cannot reach town before dark.",
+          ng: ["It is nearly half past five, we cannot reach town, before dark.", "It is nearly half past five we cannot reach town before dark."],
+          why: "完全な2つの文を、コンマだけでつなぐのはだめです。セミコロン(;)でつなぎます。" },
+        { q: "次の悪文を直してください。", bad: "Love is a poodle, she is brown.",
+          ok: "Love is a poodle; she is brown.",
+          ng: ["Love is a poodle, she is, brown.", "Love is a poodle she is brown."],
+          why: "Love is a poodle と she is brown は、それぞれ完全な文です。コンマだけでつながず、セミコロンにします。" },
+        { q: "正しい形はどれ?", bad: "",
+          ok: "The park was crowded; Mom chose another path.",
+          ng: ["The park was crowded, Mom chose another path.", "The park was crowded Mom chose another path."],
+          why: "2つの文のあいだは、セミコロンかピリオドです。コンマだけ、または何もなし、はだめです。" },
+        { q: "次の悪文を直してください。", bad: "The rain stopped, however the road was still wet.",
+          ok: "The rain stopped; however, the road was still wet.",
+          ng: ["The rain stopped, however, the road was still wet.", "The rain stopped however, the road was still wet."],
+          why: "however は and や but ではなく、副詞です。副詞で2つ目の文を始めるときは、前をセミコロン(;)にします。" },
+        { q: "次の悪文を直してください。", bad: "The leash broke, Love ran into the street.",
+          ok: "The leash broke; Love ran into the street.",
+          ng: ["The leash broke, Love ran, into the street.", "The leash broke Love ran into the street."],
+          why: "完全な2つの文なので、セミコロンでつなぎます。(ピリオドで2つに分けても正しいです)" }
+      ]
+    },
+    6: {
+      gloss: "1つの文の続きを、ピリオドで切り離してはいけません。切り離された部分は、それだけでは文にならない「断片」になります。",
+      examples: ["Love sat by the door, waiting for Mom.", "I like Max, a dog who always shares his toys.", "When the bell rang, Love barked."],
+      notes: ["強調のために、わざと断片を使う書き方もあります。ただし、その効果に自信があるときだけです。"],
+      qs: [
+        { q: "次の悪文を直してください。", bad: "Love ran to the gate. Because she heard Mom's car.",
+          ok: "Love ran to the gate because she heard Mom's car.",
+          ng: ["Love ran to the gate. Because, she heard Mom's car.", "Love ran to the gate, Because she heard Mom's car."],
+          why: "Because she heard Mom's car は、理由の説明の途中です。それだけでは文にならないので、ピリオドで切らず、前の文につなげます。" },
+        { q: "次の悪文を直してください。", bad: "I like Max. A dog who always shares his toys.",
+          ok: "I like Max, a dog who always shares his toys.",
+          ng: ["I like Max a dog, who always shares his toys.", "I like Max. a dog who always shares his toys."],
+          why: "A dog who always shares his toys は、Max の説明です。ピリオドで切らず、コンマで前の文につなげます。" },
+        { q: "次の悪文を直してください。", bad: "Love sat by the door. Waiting for Mom.",
+          ok: "Love sat by the door, waiting for Mom.",
+          ng: ["Love sat by the door. waiting for Mom.", "Love sat, by the door waiting for Mom."],
+          why: "Waiting for Mom は、Love の動作の説明です。それだけでは文にならないので、コンマで前の文につなげます。" },
+        { q: "正しい形はどれ?", bad: "",
+          ok: "When the bell rang, Love barked.",
+          ng: ["When the bell rang. Love barked.", "When the bell rang; Love barked."],
+          why: "When the bell rang は、それだけでは文になりません。コンマで、次の文につなげます。" },
+        { q: "強調のために、わざと断片を使うことを、本はどう言っていますか?", bad: "",
+          ok: "効果に自信があるときだけ、使ってよい",
+          ng: ["どんな場合も、使ってはいけない", "強調でなくても、いつでも自由に使ってよい"],
+          why: "本は、強調のための断片を認めています。ただし、効果に自信があるときに限ります。" }
+      ]
+    },
+    7: {
+      gloss: "文のはじめの「〜しながら」「〜して」(Walking … / Opening … など)は、その文の主語の動作を表します。主語と合わないと、おかしな意味になります。",
+      examples: ["Opening the door, Mom felt the cold air.", "Walking home, we felt the rain begin to fall.", "Tired from the walk, Love needed a nap."],
+      notes: ["本の見出しは「文頭の分詞(〜ing など)の句は、文の主語を表す」という意味です。文のはじめの動作をするのは、主語です。"],
+      qs: [
+        { q: "次の悪文を直してください。", bad: "Running to the gate, the car came into view.",
+          ok: "Running to the gate, Love saw the car come into view.",
+          ng: ["Running to the gate, the car's lights came into view.", "Running to the gate, a car was seen by Love."],
+          why: "Running to the gate(門へ走って)をしているのは Love です。だから主語は Love にします。" },
+        { q: "次の悪文を直してください。", bad: "Walking home from the park, the rain began to fall.",
+          ok: "Walking home from the park, we felt the rain begin to fall.",
+          ng: ["Walking home from the park, the rain fell on us.", "Walking home from the park, rain began falling."],
+          why: "歩いているのは人です。主語が the rain だと「雨が歩いている」ことになってしまいます。" },
+        { q: "次の悪文を直してください。", bad: "Sitting on the sofa, the TV was loud.",
+          ok: "Sitting on the sofa, Love heard the loud TV.",
+          ng: ["Sitting on the sofa, the loud TV was heard.", "Sitting on the sofa, the TV was too loud for Love."],
+          why: "ソファに座っているのは Love です。主語を Love にします。" },
+        { q: "次の悪文を直してください。", bad: "Tired from the walk, a nap was needed.",
+          ok: "Tired from the walk, Love needed a nap.",
+          ng: ["Tired from the walk, a nap was what Love needed.", "Tired from the walk, the nap was needed."],
+          why: "疲れているのは Love です。主語が a nap だと「昼寝が疲れている」ことになります。" },
+        { q: "次の悪文を直してください。", bad: "Opening the door, the cold air hit Mom.",
+          ok: "Opening the door, Mom felt the cold air.",
+          ng: ["Opening the door, the cold air felt cold to Mom.", "Opening the door, Mom's face was hit by the cold air."],
+          why: "ドアを開けているのは Mom です。主語を Mom にします。" }
+      ]
+    },
+    8: {
+      gloss: "話題が1つ変わるごとに、段落を1つ分けます。段落の分け目は、読む人への「次の話に進みます」という合図です。",
+      examples: ["One topic, one paragraph.", "A new speaker, a new paragraph."],
+      notes: ["とても短い話題なら、1段落だけでもかまいません。", "会話を書くときは、話す人が変わるたびに、新しい段落にします。"],
+      qs: [
+        { q: "ラブの1日を書いています。朝の散歩の話から、夕方の病院の話に変わります。段落はどうしますか?", bad: "",
+          ok: "話題が変わるところで、新しい段落にする",
+          ng: ["1つの段落に、ぜんぶ続ける", "文ごとに、段落を分ける"],
+          why: "話題が変わったら、段落も変えます。1つの話題に、1つの段落です。" },
+        { q: "会話文で、話す人が変わりました。本のルールは?", bad: "",
+          ok: "話す人が変わるたびに、新しい段落にする",
+          ng: ["同じ段落のまま続ける", "会話は、段落を使わない"],
+          why: "会話では、話す人が変わるたびに、新しい段落を始めます。" },
+        { q: "段落の分け目は、読む人にとって何の合図ですか?", bad: "",
+          ok: "新しい話題に進むという合図",
+          ng: ["文章がもうすぐ終わるという合図", "ここで読むのをやめてよいという合図"],
+          why: "段落の分け目は、「ここから次の話題です」という合図です。" },
+        { q: "とても短い話題です。本の考えは?", bad: "",
+          ok: "1段落だけでもよい",
+          ng: ["必ず3段落に分ける", "他の話題と必ず混ぜる"],
+          why: "短い話題なら、1段落で十分です。" },
+        { q: "次のうち、1つの段落にまとめるのがよいのは?", bad: "",
+          ok: "同じ話題を説明する、5つの文",
+          ng: ["ぜんぜん別の話題の、5つの文", "5つの話題を、1文ずつ"],
+          why: "1つの段落は、1つの話題です。同じ話題の文は、まとめて書きます。" }
+      ]
+    },
+    9: {
+      gloss: "段落は、その段落でいちばん言いたいこと(話題の文)で始めます。そして、段落の終わりは、最初の内容に合わせてしめくくります。",
+      examples: ["The breeze served us admirably.", "The campaign opened with a series of reverses.", "Love's morning walk is the best part of her day."],
+      notes: ["段落の最初の文を topic sentence(話題の文)と呼びます。", "段落を、本筋から外れた小さな話で終えるのは、避けます。"],
+      qs: [
+        { q: "ラブの朝の散歩について書きます。段落の最初に置く文として、いちばんよいのは?", bad: "",
+          ok: "Love's morning walk is the best part of her day.",
+          ng: ["First, she goes out the door.", "It was raining a little."],
+          why: "最初の文で、その段落の話題(朝の散歩)を、はっきり言います。" },
+        { q: "段落の終わりは、どうするのがよいですか?", bad: "",
+          ok: "最初の文の内容に合わせて、しめくくる",
+          ng: ["最初と関係のない、小さな話で終える", "別の話題を、新しく始める"],
+          why: "本は、段落の終わりを、最初の文に合わせることをすすめています。" },
+        { q: "雨の日の散歩について書く段落の、最初の文として、いちばんよいのは?", bad: "",
+          ok: "Rainy days make our walks short.",
+          ng: ["Mom has a yellow umbrella.", "Anyway, we got home."],
+          why: "最初の文で、段落の話題(雨の日の散歩)を言います。" },
+        { q: "段落の最初に置く、いちばん言いたいことの文を、何と呼びますか?", bad: "",
+          ok: "topic sentence(話題の文)",
+          ng: ["closing sentence(結びの文)", "loose sentence(だらだら文)"],
+          why: "本では、段落の最初の文を topic sentence と呼びます。" },
+        { q: "The breeze served us admirably.(風がとてもよく役立った)のあとに、続けて書くのがよいのは?", bad: "",
+          ok: "風がどう役に立ったかの説明",
+          ng: ["ぜんぜん別の話題", "風と関係ない人物の紹介"],
+          why: "最初の文で言ったことを、続く文で説明します。" }
+      ]
+    },
+    10: {
+      gloss: "「〜される」(受け身)より、「〜する」(能動態)で書くと、力強く、分かりやすい文になります。",
+      examples: ["I shall always remember my first visit to Boston.", "Love broke the vase.", "Mom takes a walk every morning."],
+      notes: ["受け身が必要なときもあります。ほかの語を主語にしたいときなど、受け身を使うかどうかは、そこで決まります。"],
+      qs: [
+        { q: "次の悪文を直してください。", bad: "My first visit to Boston will always be remembered by me.",
+          ok: "I shall always remember my first visit to Boston.",
+          ng: ["My first visit to Boston will always be remembered.", "Always will my first visit to Boston be remembered by me."],
+          why: "「だれが覚えているか」を主語にして、能動態にします。I が主語です。" },
+        { q: "次の悪文を直してください。", bad: "The ball was caught by Love.",
+          ok: "Love caught the ball.",
+          ng: ["The ball was caught.", "The ball caught by Love."],
+          why: "「だれが取ったか」を主語にします。Love が主語です。" },
+        { q: "次の悪文を直してください。", bad: "The vase was broken by the dog.",
+          ok: "The dog broke the vase.",
+          ng: ["The vase was broken.", "The vase got broken by the dog."],
+          why: "「だれが割ったか」を主語にして、短く言い切ります。" },
+        { q: "次の悪文を直してください。", bad: "A walk is taken by Mom every morning.",
+          ok: "Mom takes a walk every morning.",
+          ng: ["Every morning a walk is taken.", "Mom a walk takes every morning."],
+          why: "Mom を主語にした、普通の語順にします。" },
+        { q: "本は、受け身(受動態)について、どう言っていますか?", bad: "",
+          ok: "必要なときは、使ってよい",
+          ng: ["どんなときも、使ってはいけない", "できるだけ多く、使うほうがよい"],
+          why: "本は能動態をすすめていますが、受け身が必要な場合もあるとしています。" }
+      ]
+    },
+    11: {
+      gloss: "「〜ない」と、あいまいに言うより、「〜だ」と言い切る形で書きます。not は、否定したいときや、対比するときに使います。",
+      examples: ["He usually came late.", "Max was dishonest about the bone.", "Love forgot to bring the ball."],
+      notes: ["本の例: not honest は dishonest に、not very often on time は usually came late に直せます。", "not は、答えをぼかすために使ってはいけません。"],
+      qs: [
+        { q: "次の悪文を直してください。", bad: "He was not very often on time.",
+          ok: "He usually came late.",
+          ng: ["He was often not on time.", "He was not always late."],
+          why: "「あまり時間どおりではない」を、「たいてい遅れた」と言い切ります。" },
+        { q: "次の悪文を直してください。", bad: "Max was not honest about the bone.",
+          ok: "Max was dishonest about the bone.",
+          ng: ["Max was not very honest about the bone.", "Max was not at all honest about the bone."],
+          why: "not honest は、dishonest と、1語で言い切れます。" },
+        { q: "次の悪文を直してください。", bad: "Love did not remember to bring the ball.",
+          ok: "Love forgot to bring the ball.",
+          ng: ["Love did not really remember the ball.", "Love did not think of the ball."],
+          why: "did not remember は、forgot(忘れた)と、言い切れます。" },
+        { q: "次の悪文を直してください。", bad: "Mom did not pay attention to the clock.",
+          ok: "Mom ignored the clock.",
+          ng: ["Mom did not notice much of the clock.", "Mom was not attending the clock."],
+          why: "did not pay attention to は、ignored(無視した)と、言い切れます。" },
+        { q: "not を使ってよいのは、どんなときですか?", bad: "",
+          ok: "否定したいときや、対比するとき",
+          ng: ["迷っていることを表すとき", "答えをぼかしたいとき"],
+          why: "本は、not を、否定や対比に使うべきだとし、答えを逃げるためには使うなと言います。" }
+      ]
+    },
+    12: {
+      gloss: "ぼんやりした言葉より、はっきりした言葉を選びます。一般的な言い方より具体的に、あいまいな言い方より明確に。",
+      examples: ["It rained every day for a week.", "Love chased three squirrels around the park.", "On our walk, the wind smelled of cut grass."],
+      notes: ["本の例: A period of unfavorable weather set in. は、It rained every day for a week. と、具体的に書けます。"],
+      qs: [
+        { q: "次の悪文を直してください。", bad: "A period of unfavorable weather set in.",
+          ok: "It rained every day for a week.",
+          ng: ["There was bad weather for some time.", "The weather turned unfavorable."],
+          why: "「悪い天気の期間」を、「1週間、毎日雨」と、具体的にします。" },
+        { q: "次の悪文を直してください。", bad: "Max ate something big.",
+          ok: "Max ate a whole roast chicken.",
+          ng: ["Max ate a large amount of food.", "Max consumed a big thing."],
+          why: "something big のような、ぼんやりした言葉を、何を食べたかまで具体的にします。" },
+        { q: "次の悪文を直してください。", bad: "Mom was in a bad mood yesterday.",
+          ok: "Mom skipped dinner and slammed the door yesterday.",
+          ng: ["Mom felt unhappy yesterday.", "Mom had a negative day yesterday."],
+          why: "「機嫌が悪い」と言うかわりに、そのときの行動を書きます。" },
+        { q: "次の悪文を直してください。", bad: "The walk was nice.",
+          ok: "On our walk, the wind smelled of cut grass.",
+          ng: ["The walk was very pleasant.", "Our walk was a lovely experience."],
+          why: "nice のような、ぼんやりした言葉をやめて、見たもの・感じたものを書きます。" },
+        { q: "本は、言葉の選び方について、どう言っていますか?", bad: "",
+          ok: "ぼんやりした言葉より、はっきりした言葉を選ぶ",
+          ng: ["むずかしい言葉を選ぶ", "短い言葉ほどよい"],
+          why: "本は、一般的より具体的、あいまいより明確、抽象より具体的、と言っています。" }
+      ]
+    },
+    13: {
+      gloss: "いらない言葉は、削ります。1語1語が、仕事をしている文にします。",
+      examples: ["Whether Love can swim is unclear.", "Because it rained, we stayed home.", "His brother, a member of the same firm, spoke next."],
+      notes: ["本の例: the question as to whether は whether に、owing to the fact that は since(または because)に、who is a member of は a member of に、短くできます。", "短い文だけを書け、という意味ではありません。1語1語に役割がある文にする、という意味です。"],
+      qs: [
+        { q: "次の悪文を直してください。", bad: "The question as to whether Love can swim is unclear.",
+          ok: "Whether Love can swim is unclear.",
+          ng: ["The question of whether Love can swim is unclear.", "The question as regards whether Love can swim is unclear."],
+          why: "the question as to whether は、whether 1語で足ります。" },
+        { q: "次の悪文を直してください。", bad: "Owing to the fact that it rained, we stayed home.",
+          ok: "Because it rained, we stayed home.",
+          ng: ["Due to the fact that it rained, we stayed home.", "In view of the fact that it rained, we stayed home."],
+          why: "owing to the fact that は、because 1語に言い換えられます。" },
+        { q: "次の悪文を直してください。", bad: "Love's friend, who is a dog from next door, came over.",
+          ok: "Love's friend, a dog from next door, came over.",
+          ng: ["Love's friend, a dog who is from next door, came over.", "Love's friend, being a dog who is from next door, came over."],
+          why: "who is を削って、a dog from next door だけを残します。" },
+        { q: "次の悪文を直してください。", bad: "He is a man who is very kind.",
+          ok: "He is a kind man.",
+          ng: ["He is a man that is kind.", "He is a man of kindness."],
+          why: "a man who is very kind は、a kind man で足ります。" },
+        { q: "次の悪文を直してください。", bad: "In my opinion, I think Love is the cutest dog.",
+          ok: "I think Love is the cutest dog.",
+          ng: ["In my opinion, Love is, I think, the cutest dog.", "It is my opinion that I think Love is the cutest dog."],
+          why: "In my opinion と I think は、同じことを言っています。どちらか1つで足ります。" }
+      ]
+    },
+    14: {
+      gloss: "and / but / so などで、短い文をだらだらとつなぐ文(loose sentence)を、続けて書かないようにします。単調になります。",
+      examples: ["Love ran to the park and saw a squirrel. She chased it, but it climbed a tree.", "After we got home, Mom made dinner. I ate it all and fell asleep."],
+      notes: ["文の形を変えると、リズムが生まれます。短い文、セミコロンでつなぐ文、前置きのある文などを混ぜます。"],
+      qs: [
+        { q: "次の悪文を直してください。", bad: "Love ran to the park, and she saw a squirrel, and she chased it, but it climbed a tree, and she barked.",
+          ok: "Love ran to the park and saw a squirrel. She chased it, but it climbed a tree; she could only bark.",
+          ng: ["Love ran to the park, and she saw a squirrel, and she chased it, and then it climbed a tree.", "Love ran to the park, so she saw a squirrel, and it climbed a tree, so she barked."],
+          why: "and / but でだらだらつなぐのをやめて、文を区切り、形を変えます。" },
+        { q: "次の悪文を直してください。", bad: "We got home and Mom made dinner and I ate it and then I slept.",
+          ok: "After we got home, Mom made dinner. I ate it all and fell asleep.",
+          ng: ["We got home, and Mom made dinner, and I ate it, and I slept.", "We got home but Mom made dinner so I ate and then slept."],
+          why: "1文に詰め込まず、2つの文に分けます。文の形も変えます。" },
+        { q: "次の悪文を直してください。", bad: "It rained, and the park was empty, and Love was sad.",
+          ok: "Because it rained, the park was empty, and Love was sad.",
+          ng: ["It rained, and the park was empty, and so Love was sad.", "It rained and the park was empty and Love was sad."],
+          why: "最初の部分を Because でまとめると、だらだら感が減ります。" },
+        { q: "次の悪文を直してください。", bad: "Max is fast, but Love is faster, but Bruno is fastest.",
+          ok: "Max is fast. Love is faster. Bruno is fastest.",
+          ng: ["Max is fast, but Love is faster, and Bruno is fastest.", "Max is fast and Love is faster but Bruno is fastest."],
+          why: "短い文に分けると、リズムよく読めます。" },
+        { q: "「だらだら文(loose sentence)」とは?", bad: "",
+          ok: "and, but, so などで、短い文をだらだらつなげた文",
+          ng: ["とても短い文", "1文だけの段落"],
+          why: "本が避けるように言うのは、and や but などで、延々と続く文です。" }
+      ]
+    },
+    15: {
+      gloss: "同じ重さの内容を並べるときは、同じ形でそろえます。形をそろえると、「並んでいる」ことが伝わります。",
+      examples: ["The ceremony was both long and tedious.", "A time not for words, but for action.", "You must either grant his request or incur his ill will."],
+      notes: ["both … and や either … or の、それぞれのあとの形も、そろえます。", "a / the や前置詞を並べるときは、全部に付けるか、最初の1つだけにします。"],
+      qs: [
+        { q: "次の悪文を直してください。", bad: "It was both a long ceremony and very tedious.",
+          ok: "The ceremony was both long and tedious.",
+          ng: ["It was both a long ceremony and tedious.", "The ceremony was both long and was very tedious."],
+          why: "both の後ろを、long と tedious の、同じ形(形容詞)にそろえます。" },
+        { q: "次の悪文を直してください。", bad: "A time not for words, but action.",
+          ok: "A time not for words, but for action.",
+          ng: ["A time not for words, but of action.", "A time not for words but action."],
+          why: "not for words と、but for action の形をそろえます。" },
+        { q: "次の悪文を直してください。", bad: "Either you must grant his request or incur his ill will.",
+          ok: "You must either grant his request or incur his ill will.",
+          ng: ["Either you must grant his request, or you incur his ill will.", "You either must grant his request or incur his ill will."],
+          why: "either の後ろと or の後ろを、同じ形(grant … / incur …)にそろえます。" },
+        { q: "次の悪文を直してください。", bad: "The French, the Italians, Spanish, and Portuguese",
+          ok: "The French, the Italians, the Spanish, and the Portuguese",
+          ng: ["The French, Italians, the Spanish, and Portuguese", "The French, the Italians, Spanish, and the Portuguese"],
+          why: "the を付けるなら全部に付けます。" },
+        { q: "次の悪文を直してください。", bad: "Love likes to run, jumping, and to dig holes.",
+          ok: "Love likes to run, to jump, and to dig holes.",
+          ng: ["Love likes running, to jump, and digging holes.", "Love likes to run, jumping, and digging holes."],
+          why: "並べる3つを、to + 動詞の形でそろえます。" }
+      ]
+    },
+    16: {
+      gloss: "つながる言葉は、近くに置きます。言葉の順番が、どれがどれにつながるかを決めます。",
+      examples: ["He found only two mistakes.", "Not all the members were present.", "In the fifth book of The Excursion, Wordsworth gives a minute description of this church."],
+      notes: ["only や not の位置を変えると、意味が変わります。かかる言葉のすぐ前に置きます。", "関係代名詞(which, that など)は、説明する言葉のすぐ後ろに置きます。"],
+      qs: [
+        { q: "次の悪文を直してください。", bad: "He only found two mistakes.",
+          ok: "He found only two mistakes.",
+          ng: ["He found two only mistakes.", "Only he found two mistakes."],
+          why: "only は、かかる言葉(two mistakes)のすぐ前に置きます。" },
+        { q: "次の悪文を直してください。", bad: "All the members were not present.",
+          ok: "Not all the members were present.",
+          ng: ["All the members were present not.", "The members all were not present."],
+          why: "not は、かかる言葉(all)のすぐ前に置きます。" },
+        { q: "次の悪文を直してください。", bad: "Love, after she heard the bell, ran to the door.",
+          ok: "After she heard the bell, Love ran to the door.",
+          ng: ["Love, after she heard, the bell ran to the door.", "Love ran, after she heard the bell, to the door."],
+          why: "主語と動詞のあいだに長い説明を入れず、前に出します。" },
+        { q: "次の悪文を直してください。", bad: "There was a look in his eye that boded mischief.",
+          ok: "In his eye was a look that boded mischief.",
+          ng: ["There was a look that boded mischief in his eye.", "A look was in his eye that boded mischief."],
+          why: "that 以下は、a look を説明しています。a look のすぐ後ろに置きます。" },
+        { q: "次の悪文を直してください。", bad: "Max found a bone in the garden that was very old.",
+          ok: "Max found a very old bone in the garden.",
+          ng: ["In the garden that was very old, Max found a bone.", "Max found in the garden a bone very old."],
+          why: "very old は bone を説明する言葉です。bone のすぐ近くに置きます。" }
+      ]
+    },
+    17: {
+      gloss: "あらすじ(物語や映画の要約)は、現在形か過去形のどちらか1つにそろえます。先に起きたことは、現在形のあらすじなら現在完了、過去形のあらすじなら過去完了で書きます。",
+      examples: ["Love runs to the door. She barks at the mailman.", "The Friar confesses that it was he who married them.", "Love eats the cake that Mom has baked."],
+      notes: ["本の例: The Friar confesses that it was he who married them. では、he who married them は、過去のことを過去形のまま述べています。"],
+      qs: [
+        { q: "次の悪文を直してください。", bad: "Love runs to the door. She barked at the mailman. Then she wags her tail.",
+          ok: "Love runs to the door. She barks at the mailman. Then she wags her tail.",
+          ng: ["Love ran to the door. She barks at the mailman. Then she wagged her tail.", "Love runs to the door. She barks at the mailman. Then she wagged her tail."],
+          why: "あらすじは、現在形にそろえます。barked だけが過去形でした。" },
+        { q: "現在形のあらすじで、「先に起きたこと」はどう書きますか?", bad: "",
+          ok: "Love eats the cake that Mom has baked.",
+          ng: ["Love eats the cake that Mom bakes.", "Love eats the cake that Mom will bake."],
+          why: "現在形のあらすじで、先に起きたことは、現在完了(has baked)で書きます。" },
+        { q: "次の悪文を直してください。", bad: "Love ran to the park. She sees a squirrel. She chased it.",
+          ok: "Love ran to the park. She saw a squirrel. She chased it.",
+          ng: ["Love runs to the park. She saw a squirrel. She chases it.", "Love ran to the park. She sees a squirrel. She chases it."],
+          why: "あらすじは、過去形にそろえます。sees だけが現在形でした。" },
+        { q: "次の悪文を直してください。", bad: "Mom opens the door, and Love ran out and barks.",
+          ok: "Mom opens the door, and Love runs out and barks.",
+          ng: ["Mom opened the door, and Love runs out and barked.", "Mom opens the door, and Love ran out and barked."],
+          why: "あらすじは、現在形にそろえます。ran だけが過去形でした。" },
+        { q: "あらすじを書くとき、時制はどうしますか?", bad: "",
+          ok: "現在形か過去形の、どちらか1つにそろえる",
+          ng: ["現在形と過去形を、交互に混ぜる", "未来形だけを使う"],
+          why: "本は、あらすじの時制を、1つにそろえるように言っています。" }
+      ]
+    },
+    18: {
+      gloss: "いちばん言いたい言葉は、文の最後に置きます。文の最後は、いちばん目立つ場所です。",
+      examples: ["Because of its hardness, this steel is principally used in making razors.", "Just when we reached the park, it started to rain.", "Love can run fast, but she can't swim at all."],
+      notes: ["文の最初も、目立つ場所です。ただし、いちばん強いのは、最後です。"],
+      qs: [
+        { q: "「かみそりに使われる」ことを、いちばん言いたいです。直してください。", bad: "This steel is principally used for making razors, because of its hardness.",
+          ok: "Because of its hardness, this steel is principally used in making razors.",
+          ng: ["This steel is principally used in making razors because of its hardness.", "Principally used in making razors is this steel, because of its hardness."],
+          why: "言いたいこと(かみそりに使う)を、最後に置きます。" },
+        { q: "「ラブは、ぜんぜん泳げない」を、いちばん言いたいです。直してください。", bad: "Love can't swim at all, though she can run fast.",
+          ok: "Love can run fast, but she can't swim at all.",
+          ng: ["Love can't swim at all, but she can run fast.", "Though Love can't swim at all, she can run fast."],
+          why: "言いたいこと(ぜんぜん泳げない)を、最後に置きます。" },
+        { q: "「雨がふってきた」ことを、いちばん言いたいです。直してください。", bad: "It started to rain just when we reached the park.",
+          ok: "Just when we reached the park, it started to rain.",
+          ng: ["It just started to rain when we reached the park.", "When we reached the park, just it started to rain."],
+          why: "言いたいこと(雨がふってきた)を、最後に置きます。" },
+        { q: "文の中で、いちばん目立つ場所は?", bad: "",
+          ok: "文の最後",
+          ng: ["文の真ん中", "文の2番目の言葉"],
+          why: "本は、文の最後が、いちばん目立つ場所だと言っています。" },
+        { q: "文の最後には、どんな言葉を置きますか?", bad: "",
+          ok: "いちばん言いたい、新しい情報",
+          ng: ["つなぎの言葉(and, but など)", "どうでもよい補足"],
+          why: "最後には、いちばん言いたい言葉を置きます。" }
+      ]
     }
   };
 
@@ -303,6 +732,64 @@ h1, h2, h3, p { margin: 0; }
   }
   function go(view, n) { S.view = view; if (n !== undefined) S.n = n; render(); try { window.scrollTo(0, 0); } catch (e) {} }
   function cur() { return S.view === "quiz" && S.sess ? S.sess.items[S.sess.i] : null; }
+
+  /* ---------- ラブ(茶色のトイプードル)のドット絵 ---------- */
+  var spriteCache = {};
+  function sprite(state) {
+    if (spriteCache[state]) return spriteCache[state];
+    var W = 26, H = 26, g = [], y, x;
+    for (y = 0; y < H; y++) { g.push([]); for (x = 0; x < W; x++) g[y].push(null); }
+    var C = { B: "#9a6334", L: "#c08a52", D: "#6e4524", K: "#2e1a0e", E: "#111111", W: "#ffffff", T: "#ef6f7c", R: "#d83a34", Y: "#ffd23f", Q: "#6ec6ff" };
+    function set(px, py, c) { if (px >= 0 && py >= 0 && px < W && py < H) g[py][px] = c; }
+    function ell(cx, cy, rx, ry, c) {
+      for (var yy = 0; yy < H; yy++) for (var xx = 0; xx < W; xx++) {
+        var dx = (xx + 0.5 - cx) / rx, dy = (yy + 0.5 - cy) / ry;
+        if (dx * dx + dy * dy <= 1) set(xx, yy, c);
+      }
+    }
+    ell(13, 21, 5.6, 3.6, C.B);                                  // からだ
+    for (y = 22; y <= 24; y++) { set(9, y, C.L); set(10, y, C.L); set(11, y, C.L); set(15, y, C.L); set(16, y, C.L); set(17, y, C.L); }
+    ell(4.9, 12.5, 2.1, 3.8, C.D); ell(21.1, 12.5, 2.1, 3.8, C.D); // 小さな耳
+    ell(13, 10, 7.0, 6.3, C.B); ell(7.2, 12, 2.4, 3, C.B); ell(18.8, 12, 2.4, 3, C.B); // あたま+ほっぺ
+    ell(8.6, 5.6, 2.6, 2.2, C.B); ell(17.4, 5.6, 2.6, 2.2, C.B); ell(13, 4.6, 3.6, 1.8, C.B); ell(7.6, 7.6, 2.4, 2.4, C.B); ell(18.4, 7.6, 2.4, 2.4, C.B); // ふわふわの毛(なだらか)
+    for (y = 0; y < H; y++) for (x = 0; x < W; x++) {
+      if (g[y][x] === C.B) {
+        if ((x * 7 + y * 3) % 9 === 0) g[y][x] = C.D;
+        else if ((x * 5 + y * 2) % 11 === 0) g[y][x] = C.L;
+      }
+    }
+    for (x = 9; x <= 16; x++) set(x, 17, C.R);                   // 首輪
+    set(12, 18, C.Y); set(13, 18, C.Y);
+    ell(13, 13.6, 3.3, 2.6, C.L);                                // 口まわり
+    set(12, 12, C.E); set(13, 12, C.E); set(12, 13, C.E); set(13, 13, C.E); // 鼻
+    if (state === "happy") {
+      set(8, 10, C.E); set(9, 9, C.E); set(10, 10, C.E); set(15, 10, C.E); set(16, 9, C.E); set(17, 10, C.E);
+      set(11, 15, C.E); set(14, 15, C.E); set(12, 15, C.E); set(13, 15, C.E); set(12, 16, C.T); set(13, 16, C.T);
+    } else if (state === "sad") {
+      set(8, 9, C.E); set(9, 9, C.E); set(8, 10, C.E); set(9, 10, C.E); set(16, 9, C.E); set(17, 9, C.E); set(16, 10, C.E); set(17, 10, C.E);
+      set(8, 12, C.Q); set(8, 13, C.Q);
+      set(11, 16, C.E); set(12, 15, C.E); set(13, 15, C.E); set(14, 16, C.E);
+    } else {
+      set(8, 9, C.W); set(9, 9, C.E); set(8, 10, C.E); set(9, 10, C.E);
+      set(16, 9, C.W); set(17, 9, C.E); set(16, 10, C.E); set(17, 10, C.E);
+      set(12, 15, C.E); set(13, 15, C.E); set(11, 14, C.E); set(14, 14, C.E);
+      set(12, 16, C.T); set(13, 16, C.T);
+    }
+    var out = [];                                                // 外側のふち取り
+    for (y = 0; y < H; y++) { out.push(g[y].slice()); }
+    for (y = 0; y < H; y++) for (x = 0; x < W; x++) {
+      if (g[y][x] === null) {
+        var n = (y > 0 && g[y - 1][x]) || (y < H - 1 && g[y + 1][x]) || (x > 0 && g[y][x - 1]) || (x < W - 1 && g[y][x + 1]);
+        if (n) out[y][x] = C.K;
+      }
+    }
+    var cv = document.createElement("canvas"); cv.width = W; cv.height = H;
+    var ctx = cv.getContext("2d");
+    for (y = 0; y < H; y++) for (x = 0; x < W; x++) if (out[y][x]) { ctx.fillStyle = out[y][x]; ctx.fillRect(x, y, 1, 1); }
+    spriteCache[state] = cv.toDataURL("image/png");
+    return spriteCache[state];
+  }
+  function love(state, bob) { return '<img class="love' + (bob ? " bob" : "") + '" src="' + sprite(state) + '" alt="トイプードルのラブ">'; }
 
   /* ---------- 音声(端末の読み上げ機能を使う) ---------- */
   function note(msg) {
@@ -346,7 +833,7 @@ h1, h2, h3, p { margin: 0; }
     if (next) {
       cta += '<button class="btn red" data-act="stage" data-n="' + next + '"><span>今日の1ステージ<br><small>ルール' + next + " " + esc(RULES[next - 1].jp) + '</small></span><span class="type">&rarr;</span></button>';
     } else {
-      cta += '<p class="empty">いま遊べる3ステージはすべて習得しました。残りのステージは準備中です。</p>';
+      cta += '<p class="empty">18ステージすべて習得しました。おめでとうございます!</p>';
     }
     if (miss > 0) {
       cta += '<button class="btn alt" data-act="review"><span>ふくしゅう<br><small>間違えた問題 ' + miss + "問</small></span><span class=\"type\">&rarr;</span></button>";
@@ -368,12 +855,14 @@ h1, h2, h3, p { margin: 0; }
     rows += '<div class="row lock"><span class="no">VI</span><span><span class="jp">スペル</span><br><span class="en">Words often misspelled</span></span><span class="badge">準備中</span></div>';
     rows += '<div class="row lock"><span class="no">&#9998;</span><span><span class="jp">ボス戦: 自分の英文を添削</span><br><span class="en">Your own sentences, marked up</span></span><span class="badge">準備中</span></div>';
 
-    return '<h1 class="title">悪文なおし道場</h1>' +
+    return '<div class="stage">' + love("idle", true) + '<div class="win"><span class="who">ラブ</span><p>' + ("ルールは18個。いっしょに おぼえようワン!") + '</p></div></div>' +
+      '<h1 class="title">悪文なおし道場</h1>' +
       '<p class="sub">The Elements of Style の全18ルールを、悪文を直して身につける。</p>' +
       '<div class="strip-head"><span class="small">習得</span><span class="type"><b>' + done + "</b> / 18</span></div>" +
       '<div class="strip">' + strip + "</div>" +
       '<div class="cta-row">' + cta + "</div>" + rows +
-      '<p class="small" style="margin-top:28px">出典: William Strunk Jr., The Elements of Style (1918)。Project Gutenberg #37134、パブリックドメイン。記録はこの端末のブラウザに保存されます。</p>';
+      '<a class="btn alt" style="margin-top:28px" href="love-english.html"><span>ラブのうっかり英語<br><small>犬の場面を読んで、3つから選ぶ</small></span><span class="type">&rarr;</span></a>' +
+      '<p class="small" style="margin-top:20px">出典: William Strunk Jr., The Elements of Style (1918)。Project Gutenberg #37134、パブリックドメイン。記録はこの端末のブラウザに保存されます。</p>';
   }
 
   function ruleView() {
@@ -383,7 +872,8 @@ h1, h2, h3, p { margin: 0; }
     }).join("");
     var notes = d.notes.map(function (t) { return "<li>" + esc(t) + "</li>"; }).join("");
     return '<div class="bar"><button class="back" data-act="home">&larr; 戻る</button></div>' +
-      '<div class="rulehead">RULE ' + r.n + "</div>" +
+      '<div class="stage">' + love("idle", false) + '<div class="win"><span class="who">ラブ</span><p>' + (esc(r.jp)) + '</p></div></div>' +
+      '<div class="rulehead" style="margin-top:8px">RULE ' + r.n + "</div>" +
       '<h2 class="ruleen">' + esc(r.en) + "</h2>" +
       '<p class="rulejp">' + esc(d.gloss) + "</p>" +
       '<div class="manu"><span class="tag">本の例文(タップで音が聞けます)</span>' + ex + "</div>" +
@@ -425,7 +915,8 @@ h1, h2, h3, p { margin: 0; }
     var hint = answered
       ? '<p class="hint">' + ICON + "どの文も、タップで聞き直せます</p>"
       : '<p class="hint">' + ICON + "タップ: 音を聞く / 長押し: これを答えにする</p>";
-    return barView() + '<p class="q">' + esc(it.q) + "</p>" + bad + hint + '<div class="opts">' + opts + "</div>" + fb;
+    var st = answered ? (it.opts[it.picked].ok ? "happy" : "sad") : "idle";
+    return barView() + '<div class="stage">' + love(st, false) + '<div class="win"><span class="who">ラブ</span><p>' + (esc(it.q)) + '</p></div></div>' + bad + hint + '<div class="opts">' + opts + "</div>" + fb;
   }
 
   function resultView() {
@@ -451,7 +942,8 @@ h1, h2, h3, p { margin: 0; }
       btns += '<button class="btn alt" data-act="review"><span>残りをふくしゅう<br><small>' + missed().length + "問</small></span><span class=\"type\">&rarr;</span></button>";
     }
     btns += '<button class="btn alt" data-act="home"><span>ホームへ</span><span class="type">&rarr;</span></button>';
-    return '<div class="rulehead">' + head + "</div>" +
+    var all = okc === total;
+    return '<div class="stage">' + love(all ? "happy" : "idle", false) + '<div class="win"><span class="who">ラブ</span><p>' + (all ? "ぜんぶ正解だワン!" : "まちがえたところを、聞きなおそうワン。") + '</p></div></div>' + '<div class="rulehead" style="margin-top:8px">' + head + "</div>" +
       '<div class="score">' + okc + '<span class="small"> / ' + total + "</span></div>" + stamp +
       (wrong.length ? '<h3 class="chap" style="margin-top:22px">直し方の確認(タップで聞けます)</h3><div class="miss">' + m + "</div>" : '<p class="empty">全問正解です。</p>') +
       '<div class="cta-row" style="margin-top:26px">' + btns + "</div>";
