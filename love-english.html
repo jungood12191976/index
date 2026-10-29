@@ -23,8 +23,8 @@
   --lav: #dccfff;
   --mint: #c9f1e2;
   --btn-text: #4a3d57;
-  --win-bg: #ffffff;
-  --win-bd: #f3a9c6;
+  --win-bg: #0a1030;
+  --win-bd: #ffffff;
   --f-ui: "Zen Maru Gothic", "Zen Kaku Gothic New", "Hiragino Maru Gothic ProN", "Hiragino Sans", "Yu Gothic", sans-serif;
   --f-type: "Courier Prime", "Courier New", monospace;
   --f-dot: "DotGothic16", "Zen Kaku Gothic New", "Hiragino Sans", sans-serif;
@@ -33,14 +33,14 @@
   :root:not([data-theme="light"]) {
     --bg: #1f1a2b; --paper: #2a2338; --ink: #f4edff; --ink-2: #b9aed1; --line: #3f3553;
     --pencil: #ff8fb8; --pencil-soft: #44283a; --ok: #7be0b8; --ok-soft: #1f3a33;
-    --win-bg: #2a2338; --win-bd: #ff9fc2;
+    --win-bg: #0a1030; --win-bd: #ffffff;
     color-scheme: dark;
   }
 }
 :root[data-theme="dark"] {
   --bg: #1f1a2b; --paper: #2a2338; --ink: #f4edff; --ink-2: #b9aed1; --line: #3f3553;
   --pencil: #ff8fb8; --pencil-soft: #44283a; --ok: #7be0b8; --ok-soft: #1f3a33;
-  --win-bg: #2a2338; --win-bd: #ff9fc2;
+  --win-bg: #0a1030; --win-bd: #ffffff;
   color-scheme: dark;
 }
 * { box-sizing: border-box; }
@@ -66,11 +66,11 @@ h1, h2, h3, p { margin: 0; }
 @keyframes bob { 0% { transform: translateY(0); } 50% { transform: translateY(-4px); } 100% { transform: translateY(0); } }
 @media (prefers-reduced-motion: reduce) { .love.bob { animation: none; } }
 .stage { display: flex; gap: 10px; align-items: center; }
-.win { flex: 1; min-width: 0; background: var(--win-bg); color: var(--ink); border: 3px solid var(--win-bd); border-radius: 18px; padding: 10px 14px 12px; margin: 6px 4px 12px 14px; position: relative; }
+.win { flex: 1; min-width: 0; background: var(--win-bg); color: #fff; border: 3px solid var(--win-bd); border-radius: 14px; box-shadow: 0 0 0 3px #f3a9c6; padding: 10px 14px 12px; margin: 6px 7px 12px 14px; position: relative; }
 .win::before, .win::after { content: ""; position: absolute; top: 50%; width: 0; height: 0; border-style: solid; border-color: transparent; }
 .win::before { left: -19px; border-width: 10px 16px 10px 0; border-right-color: var(--win-bd); margin-top: -10px; }
 .win::after { left: -13px; border-width: 8px 13px 8px 0; border-right-color: var(--win-bg); margin-top: -8px; }
-.win .who { font-family: var(--f-dot); font-size: 15px; color: var(--pencil); letter-spacing: .1em; display: block; }
+.win .who { font-family: var(--f-dot); font-size: 15px; color: #ffd966; letter-spacing: .1em; display: block; }
 .win p { font-family: var(--f-dot); font-size: 22px; line-height: 1.55; }
 
 /* home */
