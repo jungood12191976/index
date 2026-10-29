@@ -1,0 +1,676 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="light dark">
+<meta name="theme-color" content="#fff8fb">
+<title>ラブの英語タウン</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&family=DotGothic16&family=Zen+Kaku+Gothic+New:wght@400;500;700&family=Zen+Maru+Gothic:wght@400;500;700&display=swap">
+<style>
+:root {
+  --bg: #fff8fb;
+  --paper: #ffffff;
+  --ink: #4a3d57;
+  --ink-2: #75688a;
+  --line: #f1dff0;
+  --pencil: #d6578a;
+  --pencil-soft: #ffe8f1;
+  --ok: #2f9e7a;
+  --ok-soft: #e2f7ee;
+  --pink: #ffc4da;
+  --lav: #dccfff;
+  --mint: #c9f1e2;
+  --btn-text: #4a3d57;
+  --win-bg: #0a1030;
+  --win-bd: #ffffff;
+  --f-ui: "Zen Maru Gothic", "Zen Kaku Gothic New", "Hiragino Maru Gothic ProN", "Hiragino Sans", "Yu Gothic", sans-serif;
+  --f-type: "Courier Prime", "Courier New", monospace;
+  --f-dot: "DotGothic16", "Zen Kaku Gothic New", "Hiragino Sans", sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #1f1a2b; --paper: #2a2338; --ink: #f4edff; --ink-2: #b9aed1; --line: #3f3553;
+    --pencil: #ff8fb8; --pencil-soft: #44283a; --ok: #7be0b8; --ok-soft: #1f3a33;
+    --win-bg: #0a1030; --win-bd: #ffffff;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #1f1a2b; --paper: #2a2338; --ink: #f4edff; --ink-2: #b9aed1; --line: #3f3553;
+  --pencil: #ff8fb8; --pencil-soft: #44283a; --ok: #7be0b8; --ok-soft: #1f3a33;
+  --win-bg: #0a1030; --win-bd: #ffffff;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+body {
+  background: var(--bg); color: var(--ink); font-family: var(--f-ui);
+  font-size: 20px; line-height: 1.7; margin: 0;
+  padding-block: 20px 72px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+.wrap { max-width: 560px; margin: 0 auto; }
+button { font: inherit; color: inherit; cursor: pointer; }
+:focus-visible { outline: 3px solid var(--pencil); outline-offset: 2px; }
+h1, h2, h3, p { margin: 0; }
+.type { font-family: var(--f-type); }
+.small { font-size: 17px; color: var(--ink-2); }
+.ico { flex: none; display: block; width: 30px; height: 30px; }
+
+/* ラブとメッセージ窓 */
+.love { image-rendering: pixelated; image-rendering: crisp-edges; width: 84px; height: 84px; flex: none; display: block; }
+.love.bob { animation: bob 1s steps(1, end) infinite; }
+@keyframes bob { 0% { transform: translateY(0); } 50% { transform: translateY(-4px); } 100% { transform: translateY(0); } }
+@media (prefers-reduced-motion: reduce) { .love.bob { animation: none; } }
+.stage { display: flex; gap: 10px; align-items: center; }
+.win { flex: 1; min-width: 0; background: var(--win-bg); color: #fff; border: 3px solid var(--win-bd); border-radius: 14px; box-shadow: 0 0 0 3px #f3a9c6; padding: 10px 14px 12px; margin: 6px 7px 12px 14px; position: relative; }
+.win::before, .win::after { content: ""; position: absolute; top: 50%; width: 0; height: 0; border-style: solid; border-color: transparent; }
+.win::before { left: -19px; border-width: 10px 16px 10px 0; border-right-color: var(--win-bd); margin-top: -10px; }
+.win::after { left: -13px; border-width: 8px 13px 8px 0; border-right-color: var(--win-bg); margin-top: -8px; }
+.win .who { font-family: var(--f-dot); font-size: 15px; color: #ffd966; letter-spacing: .1em; display: block; }
+.win p { font-family: var(--f-dot); font-size: 22px; line-height: 1.55; }
+
+/* home */
+.title { color: var(--pencil); text-align: center; margin-top: 18px; font-size: 34px; font-weight: 700; letter-spacing: .02em; line-height: 1.25; text-wrap: balance; }
+.sub { text-align: center; color: var(--ink-2); margin-top: 6px; font-size: 18px; }
+.count-line { display: flex; justify-content: space-between; align-items: baseline; margin: 18px 0 4px; }
+.cta-row { display: grid; gap: 10px; margin-top: 16px; }
+.btn { border: 2px solid var(--lav); background: var(--lav); color: var(--btn-text); padding: 18px; border-radius: 16px; font-weight: 700; font-size: 22px; text-align: left; display: flex; justify-content: space-between; gap: 12px; align-items: center; width: 100%; }
+.btn.alt { background: var(--paper); color: var(--ink); border-color: var(--lav); }
+.btn.red { background: var(--pink); border-color: var(--pink); color: var(--btn-text); }
+.btn small { font-weight: 400; opacity: .9; font-size: 17px; }
+.chap { margin: 26px 0 6px; font-size: 17px; color: var(--ink-2); letter-spacing: .08em; border-bottom: 1px solid var(--line); padding-bottom: 6px; }
+.row { width: 100%; display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 10px; align-items: center; padding: 14px 0; border: 0; border-bottom: 1px solid var(--line); background: transparent; text-align: left; }
+.row .jp { font-weight: 700; font-size: 26px; line-height: 1.4; }
+.row .en { font-family: var(--f-type); font-size: 18px; color: var(--ink-2); display: block; overflow-wrap: anywhere; }
+.row.lock { cursor: default; }
+.row.lock .jp { color: var(--ink-2); font-weight: 500; }
+.badge { font-size: 16px; border: 1px solid var(--line); border-radius: 10px; padding: 1px 8px; white-space: nowrap; color: var(--ink-2); }
+.badge.done { border-color: var(--ok); color: var(--ok); background: var(--ok-soft); font-weight: 700; }
+.badge.go { border-color: var(--pencil); color: var(--pencil); }
+
+/* top bar */
+.bar { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; }
+.back { border: 2px solid var(--lav); background: var(--paper); border-radius: 14px; padding: 8px 14px; font-size: 18px; white-space: nowrap; }
+.segs { flex: 1; display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; gap: 4px; }
+.seg { height: 8px; border-radius: 4px; background: var(--line); }
+.seg.now { background: var(--ink-2); }
+.seg.ok { background: var(--ok); }
+.seg.ng { background: var(--pencil); }
+.count { font-family: var(--f-type); font-size: 20px; color: var(--ink-2); }
+
+/* quiz */
+.sentwrap { margin-top: 10px; border-left: 3px solid var(--pencil); padding: 6px 0 6px 14px; }
+.sent { font-family: var(--f-type); font-size: 28px; line-height: 1.6; overflow-wrap: anywhere; }
+.blank { display: inline-block; min-width: 3.2em; border-bottom: 3px solid var(--pencil); text-align: center; color: var(--pencil); font-weight: 700; }
+.blank.filled { border-bottom-color: var(--ok); color: var(--ok); }
+.hint { margin-top: 14px; font-size: 18px; color: var(--ink-2); }
+.opts { display: grid; gap: 12px; margin-top: 10px; }
+.opt { position: relative; overflow: hidden; width: 100%; display: grid; grid-template-columns: 1.4em minmax(0, 1fr) auto; gap: 10px; align-items: center; text-align: left; padding: 16px 14px 18px; border: 2px solid var(--lav); border-radius: 16px; background: var(--paper); user-select: none; -webkit-user-select: none; -webkit-touch-callout: none; touch-action: manipulation; }
+.opt .l { font-family: var(--f-type); font-weight: 700; font-size: 26px; color: var(--ink-2); }
+.opt .t { font-family: var(--f-type); font-size: 30px; font-weight: 700; line-height: 1.3; overflow-wrap: anywhere; }
+.opt .t.hid { font-family: var(--f-ui); font-size: 22px; font-weight: 500; color: var(--ink-2); }
+.opt .m { font-weight: 700; font-size: 17px; white-space: nowrap; }
+.opt .ico { color: var(--ink-2); }
+.opt::after { content: ""; position: absolute; left: 0; bottom: 0; height: 6px; width: 0; background: var(--pencil); }
+.opt.holding::after { width: 100%; transition: width .6s linear; }
+.opt.holding { border-color: var(--pencil); }
+.opt.right { border-color: var(--ok); background: var(--ok-soft); }
+.opt.right .m { color: var(--ok); }
+.opt.wrong { border-color: var(--pencil); background: var(--pencil-soft); }
+.opt.wrong .m { color: var(--pencil); }
+.fb { margin-top: 18px; padding: 14px 16px; border-radius: 16px; background: var(--paper); border: 1.5px solid var(--line); }
+.fb .verdict { font-weight: 700; font-size: 26px; }
+.fb .verdict.ok { color: var(--ok); }
+.fb .verdict.ng { color: var(--pencil); }
+.fb .tr { margin-top: 4px; font-size: 20px; }
+.fb .tag { display: block; margin-top: 12px; font-size: 16px; color: var(--ink-2); letter-spacing: .08em; }
+.ims { margin: 4px 0 0; padding: 0; list-style: none; display: grid; gap: 6px; }
+.ims li { font-size: 19px; line-height: 1.5; padding: 6px 10px; border-radius: 3px; border: 1px solid var(--line); }
+.ims li.ok { border-color: var(--ok); background: var(--ok-soft); font-weight: 700; }
+.say { display: flex; gap: 10px; align-items: center; width: 100%; text-align: left; background: transparent; border: 0; padding: 8px 0 0; user-select: none; -webkit-user-select: none; touch-action: manipulation; }
+.say .ico { color: var(--pencil); }
+.say .st { font-family: var(--f-type); font-size: 22px; line-height: 1.5; min-width: 0; overflow-wrap: anywhere; }
+.next { margin-top: 16px; }
+
+/* result */
+.score { font-family: var(--f-type); font-weight: 700; font-size: 68px; line-height: 1.1; }
+.stamp { display: inline-block; border: 3.5px solid var(--pencil); color: var(--pencil); padding: 2px 16px; font-weight: 700; letter-spacing: .25em; transform: rotate(-5deg); border-radius: 14px; font-size: 30px; margin: 14px 0 6px; }
+.stamp.soft { border-color: var(--ink-2); color: var(--ink-2); font-size: 22px; }
+.miss { margin-top: 16px; display: grid; gap: 16px; }
+.miss .item { border-left: 3px solid var(--pencil); padding-left: 14px; }
+.miss .ja { font-size: 18px; color: var(--ink-2); }
+.empty { margin-top: 24px; color: var(--ink-2); }
+
+a.btn { text-decoration: none; }
+.hearts { font-family: var(--f-type); font-size: 22px; color: var(--pencil); letter-spacing: .05em; white-space: nowrap; }
+.mic { display: flex; align-items: center; justify-content: center; gap: 12px; width: 100%; padding: 20px; border-radius: 16px; border: 0; background: var(--pink); color: var(--btn-text); font-weight: 700; font-size: 24px; margin-top: 12px; }
+.mic.rec { background: var(--lav); }
+.big { font-family: var(--f-type); font-size: 28px; line-height: 1.6; overflow-wrap: anywhere; }
+.big.q { color: var(--ink-2); letter-spacing: .2em; }
+.heard { margin-top: 10px; font-family: var(--f-type); font-size: 22px; color: var(--ink-2); overflow-wrap: anywhere; }
+.note { position: fixed; left: 0; right: 0; bottom: 0; background: var(--ink); color: var(--bg); font-size: 19px; text-align: center;
+  padding-top: 12px; padding-bottom: calc(12px + env(safe-area-inset-bottom, 0px));
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+@media (prefers-reduced-motion: no-preference) {
+  .opt, .btn, .back { transition: background-color .15s, border-color .15s; }
+}
+/* 英語タウン用 */
+.win.r { margin: 6px 14px 12px 7px; }
+.win.r::before { left: auto; right: -19px; border-width: 10px 0 10px 16px; border-right-color: transparent; border-left-color: var(--win-bd); }
+.win.r::after { left: auto; right: -13px; border-width: 8px 0 8px 13px; border-right-color: transparent; border-left-color: var(--win-bg); }
+.win .en { font-family: var(--f-type); font-size: 22px; line-height: 1.5; overflow-wrap: anywhere; }
+.win .ja { font-family: var(--f-dot); font-size: 18px; color: #cfd6ff; line-height: 1.5; margin-top: 2px; }
+.win .react { margin-top: 10px; padding-top: 8px; border-top: 2px dotted #5560a0; }
+.win .who.r { color: #ff9fc3; }
+.win .wbtn { display: inline-flex; align-items: center; gap: 8px; margin: 6px 8px 0 0; padding: 8px 12px; border-radius: 12px; border: 2px solid #8993d8; background: transparent; color: #fff; font-family: var(--f-dot); font-size: 17px; user-select: none; -webkit-user-select: none; touch-action: manipulation; }
+.win .wbtn.on { background: #26306e; }
+.npc { image-rendering: pixelated; image-rendering: crisp-edges; width: 84px; height: 84px; flex: none; display: block; }
+.npc.voice { display: flex; align-items: center; justify-content: center; border: 3px dashed var(--ink-2); border-radius: 50%; font-family: var(--f-dot); font-size: 22px; color: var(--ink-2); }
+.opt .tcol { min-width: 0; display: grid; gap: 2px; }
+.opt .jp { font-size: 18px; color: var(--ink-2); line-height: 1.4; }
+.opt.right .jp { color: var(--ok); }
+.opt.dim { opacity: .75; }
+.opt .t.hid .ico { display: inline-block; vertical-align: -6px; margin-right: 6px; }
+.learn { margin-top: 14px; padding: 12px 14px; border-radius: 16px; background: var(--ok-soft); border: 1.5px solid var(--ok); }
+.learn .en { font-family: var(--f-type); font-weight: 700; font-size: 24px; overflow-wrap: anywhere; }
+.learn .ja { font-size: 19px; }
+.learn .tag { display: block; font-size: 15px; color: var(--ok); letter-spacing: .1em; font-weight: 700; }
+.reply { margin-top: 14px; padding: 12px 14px; border-radius: 16px; background: var(--paper); border: 1.5px solid var(--line); }
+.reply .en { font-family: var(--f-type); font-size: 22px; overflow-wrap: anywhere; }
+.reply .ja { font-size: 18px; color: var(--ink-2); }
+.scene { text-align: center; margin: 14px 0 4px; font-weight: 700; color: var(--pencil); font-size: 26px; }
+.stars { font-size: 40px; letter-spacing: .15em; color: #f2a93b; text-align: center; margin: 10px 0 0; }
+.tease { margin-top: 20px; padding: 16px; border: 2px dashed var(--lav); border-radius: 16px; text-align: center; color: var(--ink-2); }
+.tease b { display: block; font-size: 24px; color: var(--ink); }
+.nrow { padding: 12px 0; border-bottom: 1px solid var(--line); display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 8px; align-items: center; width: 100%; text-align: left; background: transparent; border-left: 0; border-right: 0; border-top: 0; }
+.nrow .en { font-family: var(--f-type); font-weight: 700; font-size: 24px; overflow-wrap: anywhere; }
+.nrow .ja { font-size: 18px; color: var(--ink-2); display: block; }
+</style>
+</head>
+<body>
+<div class="wrap" id="app"></div>
+<div class="note" id="note" role="status" hidden></div>
+
+<script>
+(function () {
+  "use strict";
+  /* ---------- ラブ(茶色のトイプードル)のドット絵 ---------- */
+  var spriteCache = {};
+  function sprite(state) {
+    if (spriteCache[state]) return spriteCache[state];
+    var W = 26, H = 26, g = [], y, x;
+    for (y = 0; y < H; y++) { g.push([]); for (x = 0; x < W; x++) g[y].push(null); }
+    var C = { B: "#9a6334", L: "#c08a52", D: "#6e4524", K: "#2e1a0e", E: "#111111", W: "#ffffff", T: "#ef6f7c", R: "#d83a34", Y: "#ffd23f", Q: "#6ec6ff" };
+    function set(px, py, c) { if (px >= 0 && py >= 0 && px < W && py < H) g[py][px] = c; }
+    function ell(cx, cy, rx, ry, c) {
+      for (var yy = 0; yy < H; yy++) for (var xx = 0; xx < W; xx++) {
+        var dx = (xx + 0.5 - cx) / rx, dy = (yy + 0.5 - cy) / ry;
+        if (dx * dx + dy * dy <= 1) set(xx, yy, c);
+      }
+    }
+    ell(13, 21, 5.6, 3.6, C.B);                                  // からだ
+    for (y = 22; y <= 24; y++) { set(9, y, C.L); set(10, y, C.L); set(11, y, C.L); set(15, y, C.L); set(16, y, C.L); set(17, y, C.L); }
+    ell(4.9, 12.5, 2.1, 3.8, C.D); ell(21.1, 12.5, 2.1, 3.8, C.D); // 小さな耳
+    ell(13, 10, 7.0, 6.3, C.B); ell(7.2, 12, 2.4, 3, C.B); ell(18.8, 12, 2.4, 3, C.B); // あたま+ほっぺ
+    ell(8.6, 5.6, 2.6, 2.2, C.B); ell(17.4, 5.6, 2.6, 2.2, C.B); ell(13, 4.6, 3.6, 1.8, C.B); ell(7.6, 7.6, 2.4, 2.4, C.B); ell(18.4, 7.6, 2.4, 2.4, C.B); // ふわふわの毛(なだらか)
+    for (y = 0; y < H; y++) for (x = 0; x < W; x++) {
+      if (g[y][x] === C.B) {
+        if ((x * 7 + y * 3) % 9 === 0) g[y][x] = C.D;
+        else if ((x * 5 + y * 2) % 11 === 0) g[y][x] = C.L;
+      }
+    }
+    for (x = 9; x <= 16; x++) set(x, 17, C.R);                   // 首輪
+    set(12, 18, C.Y); set(13, 18, C.Y);
+    ell(13, 13.6, 3.3, 2.6, C.L);                                // 口まわり
+    set(12, 12, C.E); set(13, 12, C.E); set(12, 13, C.E); set(13, 13, C.E); // 鼻
+    if (state === "happy") {
+      set(8, 10, C.E); set(9, 9, C.E); set(10, 10, C.E); set(15, 10, C.E); set(16, 9, C.E); set(17, 10, C.E);
+      set(11, 15, C.E); set(14, 15, C.E); set(12, 15, C.E); set(13, 15, C.E); set(12, 16, C.T); set(13, 16, C.T);
+    } else if (state === "sad") {
+      set(8, 9, C.E); set(9, 9, C.E); set(8, 10, C.E); set(9, 10, C.E); set(16, 9, C.E); set(17, 9, C.E); set(16, 10, C.E); set(17, 10, C.E);
+      set(8, 12, C.Q); set(8, 13, C.Q);
+      set(11, 16, C.E); set(12, 15, C.E); set(13, 15, C.E); set(14, 16, C.E);
+    } else {
+      set(8, 9, C.W); set(9, 9, C.E); set(8, 10, C.E); set(9, 10, C.E);
+      set(16, 9, C.W); set(17, 9, C.E); set(16, 10, C.E); set(17, 10, C.E);
+      set(12, 15, C.E); set(13, 15, C.E); set(11, 14, C.E); set(14, 14, C.E);
+      set(12, 16, C.T); set(13, 16, C.T);
+    }
+    var out = [];                                                // 外側のふち取り
+    for (y = 0; y < H; y++) { out.push(g[y].slice()); }
+    for (y = 0; y < H; y++) for (x = 0; x < W; x++) {
+      if (g[y][x] === null) {
+        var n = (y > 0 && g[y - 1][x]) || (y < H - 1 && g[y + 1][x]) || (x > 0 && g[y][x - 1]) || (x < W - 1 && g[y][x + 1]);
+        if (n) out[y][x] = C.K;
+      }
+    }
+    var cv = document.createElement("canvas"); cv.width = W; cv.height = H;
+    var ctx = cv.getContext("2d");
+    for (y = 0; y < H; y++) for (x = 0; x < W; x++) if (out[y][x]) { ctx.fillStyle = out[y][x]; ctx.fillRect(x, y, 1, 1); }
+    spriteCache[state] = cv.toDataURL("image/png");
+    return spriteCache[state];
+  }
+  function love(state, bob) { return '<img class="love' + (bob ? " bob" : "") + '" src="' + sprite(state) + '" alt="トイプードルのラブ">'; }
+  /* ---------- 町の住人たち(ドット絵・自作) ---------- */
+  var NPC_CACHE = {};
+  function npcSprite(kind) {
+    if (NPC_CACHE[kind]) return NPC_CACHE[kind];
+    var W = 26, H = 26, g = [], y, x;
+    for (y = 0; y < H; y++) { g.push([]); for (x = 0; x < W; x++) g[y].push(null); }
+    function set(px, py, c) { if (px >= 0 && py >= 0 && px < W && py < H) g[py][px] = c; }
+    function ell(cx, cy, rx, ry, c) {
+      for (var yy = 0; yy < H; yy++) for (var xx = 0; xx < W; xx++) {
+        var dx = (xx + 0.5 - cx) / rx, dy = (yy + 0.5 - cy) / ry;
+        if (dx * dx + dy * dy <= 1) set(xx, yy, c);
+      }
+    }
+    function tri(x0, y0, w, h, c) { for (var r = 0; r < h; r++) { var half = Math.round(w * (r + 1) / h / 2); for (var k = -half; k <= half; k++) set(x0 + k, y0 + r, c); } }
+    var E = "#111111", W_ = "#ffffff", T = "#ef6f7c", K = "#2e1a0e";
+    var C;
+    if (kind === "bruno") {
+      C = { B: "#8a8f98", D: "#5d636d", L: "#cfd3da" };
+      ell(13, 21, 6.6, 3.8, C.B);
+      for (y = 22; y <= 24; y++) for (x = 8; x <= 17; x++) if (x < 11 || x > 14) set(x, y, C.L);
+      ell(13, 12, 8, 6.2, C.B);
+      ell(6.5, 7.2, 2.2, 2, C.D); ell(19.5, 7.2, 2.2, 2, C.D);
+      ell(13, 14.4, 5, 3.4, C.L);
+      for (x = 7; x <= 18; x++) set(x, 10, C.D);
+      set(8, 11, W_); set(9, 11, E); set(8, 12, E); set(9, 12, E); set(17, 11, W_); set(16, 11, E); set(17, 12, E); set(16, 12, E);
+      set(12, 13, E); set(13, 13, E); set(12, 14, E); set(13, 14, E);
+      for (x = 10; x <= 15; x++) set(x, 16, E); set(9, 15, E); set(16, 15, E);
+      set(10, 17, W_); set(15, 17, W_);
+    } else if (kind === "mika") {
+      C = { B: "#e8903a", D: "#b8631c", L: "#ffd9a8" };
+      ell(13, 21, 5.6, 3.6, C.B);
+      ell(21, 21.5, 2, 3, C.B);
+      for (y = 22; y <= 24; y++) for (x = 9; x <= 16; x++) if (x < 12 || x > 13) set(x, y, C.L);
+      tri(7, 2, 5, 6, C.B); tri(19, 2, 5, 6, C.B);
+      ell(13, 11.5, 6.6, 5.6, C.B);
+      tri(8, 4, 2, 3, T); tri(18, 4, 2, 3, T);
+      for (x = 11; x <= 15; x++) { set(x, 6, C.D); }
+      set(9, 7, C.D); set(17, 7, C.D); set(8, 9, C.D); set(18, 9, C.D);
+      ell(13, 13.5, 3.2, 2.4, C.L);
+      set(8, 10, W_); set(9, 10, E); set(8, 11, E); set(9, 11, E); set(17, 10, W_); set(16, 10, E); set(17, 11, E); set(16, 11, E);
+      set(12, 12, T); set(13, 12, T);
+      set(12, 14, E); set(13, 14, E); set(11, 13, E); set(14, 13, E);
+      for (x = 3; x <= 6; x++) { set(x, 12, W_); set(x + 17, 12, W_); }
+    } else if (kind === "hachi") {
+      C = { B: "#e2a45a", D: "#b7752d", L: "#fff4df" };
+      ell(13, 21, 5.8, 3.7, C.B);
+      ell(13, 21, 3, 3, C.L);
+      ell(20.5, 17.5, 2.6, 3, C.B); set(20, 16, C.D);
+      for (y = 22; y <= 24; y++) for (x = 9; x <= 16; x++) if (x < 12 || x > 13) set(x, y, C.L);
+      tri(6, 1, 6, 7, C.B); tri(20, 1, 6, 7, C.B);
+      tri(7, 3, 2, 4, C.L); tri(19, 3, 2, 4, C.L);
+      ell(13, 11, 7, 5.8, C.B);
+      ell(13, 14, 4.6, 3.4, C.L);
+      ell(8.5, 8.8, 1.6, 1.2, C.L); ell(17.5, 8.8, 1.6, 1.2, C.L);
+      set(9, 10, E); set(9, 11, E); set(8, 10, W_); set(8, 11, E); set(17, 10, E); set(17, 11, E); set(18, 10, W_); set(18, 11, E);
+      set(12, 12, E); set(13, 12, E); set(12, 13, E); set(13, 13, E);
+      set(12, 15, T); set(13, 15, T); set(11, 14, E); set(14, 14, E); set(12, 14, E); set(13, 14, E);
+    } else if (kind === "guard") {
+      C = { S: "#f4cfa4", U: "#33468a", D: "#222f63", Y: "#ffd23f", M: "#4a3320", H: "#2a3a6a" };
+      ell(13, 20, 6.6, 5, C.U);
+      for (y = 15; y <= 24; y++) set(13, y, C.D);
+      for (y = 17; y <= 18; y++) { set(9, y, C.Y); set(10, y, C.Y); }
+      ell(13, 10, 5.2, 5.2, C.S);
+      for (x = 7; x <= 19; x++) { set(x, 5, C.H); set(x, 6, C.H); }
+      for (x = 8; x <= 18; x++) { set(x, 4, C.H); }
+      for (x = 9; x <= 17; x++) { set(x, 3, C.H); }
+      for (x = 6; x <= 20; x++) set(x, 7, C.D);
+      set(12, 5, C.Y); set(13, 5, C.Y); set(14, 5, C.Y);
+      set(10, 9, E); set(10, 10, E); set(16, 9, E); set(16, 10, E);
+      for (x = 10; x <= 16; x++) set(x, 12, C.M); set(11, 13, C.M); set(15, 13, C.M);
+      set(12, 14, T); set(13, 14, T); set(14, 14, T);
+      set(13, 11, "#e0a47a");
+    }
+    var out = [];
+    for (y = 0; y < H; y++) out.push(g[y].slice());
+    for (y = 0; y < H; y++) for (x = 0; x < W; x++) {
+      if (g[y][x] === null) {
+        var n = (y > 0 && g[y - 1][x]) || (y < H - 1 && g[y + 1][x]) || (x > 0 && g[y][x - 1]) || (x < W - 1 && g[y][x + 1]);
+        if (n) out[y][x] = K;
+      }
+    }
+    var cv = document.createElement("canvas"); cv.width = W; cv.height = H;
+    var ctx = cv.getContext("2d");
+    for (y = 0; y < H; y++) for (x = 0; x < W; x++) if (out[y][x]) { ctx.fillStyle = out[y][x]; ctx.fillRect(x, y, 1, 1); }
+    NPC_CACHE[kind] = cv.toDataURL("image/png");
+    return NPC_CACHE[kind];
+  }
+
+  /* ---------- 登場キャラ(声の高さ・速さで聞きわける) ---------- */
+  var WHO = {
+    love:  { name: "ラブ",   pitch: 1.3,  rate: 0.9 },
+    bruno: { name: "ブルーノ", pitch: 0.6,  rate: 0.9, spr: "bruno" },
+    mika:  { name: "ミカ",   pitch: 1.5,  rate: 0.95, spr: "mika" },
+    hachi: { name: "ハチ",   pitch: 1.1,  rate: 1.0, spr: "hachi" },
+    guard: { name: "門番",   pitch: 0.8,  rate: 0.9, spr: "guard" },
+    mom:   { name: "ママの声", pitch: 1.25, rate: 0.9 }
+  };
+
+  /* ---------- 第1話「迷子のラブ」(1問目の選択肢が正解。表示は混ぜる) ---------- */
+  function O(en, jp, rEn, rJa) { return { en: en, jp: jp, r: rEn ? { en: rEn, ja: rJa } : null }; }
+  var EP1 = [
+    { id: "s1", npc: "bruno", title: "① ベンチの大きな犬",
+      intro: "リードがはずれて、知らない町に来てしまった…。家は「グリーン公園」のそば。まず、ベンチの大きな犬に話しかけよう。",
+      idle: "大きな犬が、ベンチでぼんやりしている。",
+      beats: [
+        { goal: "知らない犬に、声をかけよう。",
+          o: [O("Excuse me!", "すみません!"), O("Hey, you!", "おい、お前!", "Hey! Don't shout at me.", "「おい!どなるな。」"), O("Give me that bone!", "その骨をよこせ!", "No! It is mine!", "「だめ!ぼくのだ!」")],
+          reply: { en: "Yes? Can I help you?", ja: "「うん?どうしたの?」" },
+          learn: { en: "Excuse me!", ja: "すみません(知らない人に声をかけるとき)" } },
+        { goal: "公園の場所を、たずねよう。",
+          o: [O("Where is Green Park?", "グリーン公園は どこですか?"), O("What is Green Park?", "グリーン公園って なに?", "It is a park. Do you want to go there?", "「公園だよ。行きたいの?」"), O("Who is Green Park?", "グリーン公園って だれ?", "Who? Sorry?", "「だれ?え?」")],
+          reply: { en: "Go straight, turn left at the bakery, and you will see the park.", ja: "「まっすぐ行って、パン屋を左。そうすれば公園が見えるよ。」", rate: 1.4 },
+          learn: { en: "Where is ...?", ja: "…は どこですか?(場所をたずねる)" } },
+        { goal: "早口で、わからなかった…。",
+          o: [O("Slowly, please.", "ゆっくり お願いします。"), O("Thank you!", "ありがとう!", "You are welcome. But did you understand?", "「どういたしまして。でも、わかった?」"), O("I don't like bread.", "パンは きらいです。", "Bread? What?", "「パン?なに?」")],
+          reply: { en: "Go straight. Then turn left at the bakery.", ja: "「まっすぐ行く。それから、パン屋を左。」", rate: 0.6 },
+          learn: { en: "Slowly, please.", ja: "ゆっくり お願いします(聞きとれないとき)" } },
+        { goal: "お礼を言って、別れよう。",
+          o: [O("Thank you. Bye!", "ありがとう。さようなら!"), O("Sorry. Bye!", "ごめん。さようなら!", "Sorry? For what?", "「ごめん?なにが?」"), O("Wait. Bye!", "待って。さようなら!", "Wait? I am not going anywhere.", "「待つ?どこにも行かないよ。」")],
+          reply: { en: "Good luck, little one!", ja: "「がんばってね、ちびちゃん!」" },
+          learn: { en: "Thank you.", ja: "ありがとう(別れる前にひと言)" } }
+      ] },
+    { id: "s2", npc: "mika", title: "② 道ばたのネコ",
+      intro: "ブルーノのおかげで、パン屋の角を左だとわかった。でも、そのパン屋が見つからない。道ばたに、ネコがいる。",
+      idle: "オレンジのネコが、こちらをじっと見ている。",
+      beats: [
+        { goal: "ネコに、あいさつしよう。",
+          o: [O("Hello!", "こんにちは!"), O("Meow!", "ニャー!", "I am a cat, and you are a dog. Please speak English.", "「わたしはネコ、あなたはイヌ。英語で話してね。」"), O("Go away!", "あっちへ行け!", "Hmph! How rude.", "「ふん!失礼ね。」")],
+          reply: { en: "Hello. What is your name?", ja: "「こんにちは。お名前は?」" },
+          learn: { en: "Hello!", ja: "こんにちは" } },
+        { goal: "名前を聞かれた。名のろう。",
+          o: [O("My name is Love.", "わたしの名前は ラブです。"), O("I am name Love.", "(まちがい)わたしは 名前 ラブ", "Sorry? Your name is...?", "「え?あなたの名前は…?」"), O("Name my is Love.", "(まちがい)名前 わたしの です ラブ", "Hmm? Again, please.", "「ん?もう一度お願い。」")],
+          reply: { en: "Nice to meet you, Love. I am Mika.", ja: "「はじめまして、ラブ。わたしはミカ。」" },
+          learn: { en: "My name is ...", ja: "わたしの名前は…です" } },
+        { goal: "パン屋はどこか、きこう。",
+          o: [O("Where is the bakery?", "パン屋は どこですか?"), O("Where bakery is?", "(まちがい)どこ パン屋 です", "Sorry? Say it again.", "「え?もう一度言って。」"), O("Where is bakery the?", "(まちがい)どこ です パン屋 その", "Pardon? I don't understand.", "「え?わからないわ。」")],
+          reply: { en: "The bakery is right behind me. Do you have a map?", ja: "「パン屋は、わたしのすぐ後ろよ。地図は持ってる?」" },
+          learn: { en: "the bakery", ja: "the は、おたがいに わかっている「あの」パン屋" } },
+        { goal: "地図は持っていない。ほんとうのことを答えよう。",
+          o: [O("No, I don't.", "いいえ、持っていません。"), O("Yes, I do.", "はい、持っています。", "Oh? Then show me.", "「あら?じゃあ見せて。」"), O("No, I'm not.", "いいえ、わたしは(…では)ありません。", "Hm? I asked, do you have a map?", "「ん?地図を持ってるか、聞いたのよ。」")],
+          reply: { en: "Then go to the fountain. Hachi, the Shiba dog, has a map.", ja: "「じゃあ、噴水へ行って。柴犬のハチが地図を持ってるわ。」" },
+          learn: { en: "No, I don't.", ja: "Do you ...? と聞かれたら、do で答える" } }
+      ] },
+    { id: "s3", npc: "hachi", title: "③ 噴水の柴犬",
+      intro: "ミカに教えてもらって、噴水に来た。柴犬のハチが、しょんぼりしている。",
+      idle: "柴犬が、うつむいて 地面を見ている。",
+      beats: [
+        { goal: "ハチは しょんぼりしている。どうしたのか、きこう。",
+          o: [O("What's wrong?", "どうしたの?"), O("What's your name?", "お名前は?", "I am Hachi. But... I am sad.", "「ぼくはハチ。でも…かなしいんだ。」"), O("Be quiet!", "しずかに!", "I am quiet... I am very sad.", "「ぼく静かだよ…すごくかなしい。」")],
+          reply: { en: "I lost my ball. Can you help me look for it?", ja: "「ボールをなくしたんだ。いっしょに探してくれる?」" },
+          learn: { en: "What's wrong?", ja: "どうしたの?(困っている人に)" } },
+        { goal: "ボールを探すのを、手つだおう。",
+          o: [O("Sure! Let's look for it.", "もちろん!探そう。"), O("Sure! Let's look at it.", "もちろん!それを見よう。", "At it? It is lost!", "「見る?なくしたんだよ!」"), O("Sure! Let's finding it.", "(まちがい)もちろん!見つけている しよう", "Sorry? Say it again, please.", "「え?もう一度言って。」")],
+          reply: { en: "Thank you! It is red and round.", ja: "「ありがとう!赤くて、まるいんだ。」" },
+          learn: { en: "look for", ja: "look for は「探す」。look at は「見る」" } },
+        { goal: "ボールを見つけた!たった今のことを伝えよう。",
+          o: [O("I found your ball!", "きみのボールを 見つけたよ!"), O("I finded your ball!", "(まちがい)finded", "Sorry? Finded?", "「え?finded?」"), O("I find your ball yesterday!", "(まちがい)きのう 見つける", "Yesterday? Right now, Love!", "「きのう?今だよ、ラブ!」")],
+          reply: { en: "My ball! You are great, Love! Here, take this map.", ja: "「ぼくのボール!すごいよ、ラブ!はい、この地図をあげる。」" },
+          learn: { en: "find → found", ja: "find(見つける)の過去は found。不規則に変わる" } },
+        { goal: "地図をもらった。お礼を言おう。",
+          o: [O("Thank you very much!", "ほんとうに ありがとう!"), O("You're welcome!", "どういたしまして!", "Hm? I gave you the map.", "「ん?地図をあげたのは、ぼくだよ。」"), O("Excuse me?", "すみません?(聞き返し)", "Yes? Is something wrong?", "「なに?どうかした?」")],
+          reply: { en: "The park is just beyond the bridge. Run!", ja: "「公園は、橋のすぐ向こうだよ。走って!」" },
+          learn: { en: "Thank you very much!", ja: "ほんとうに ありがとう。You're welcome. は、言われた側のことば" } }
+      ] },
+    { id: "s4", npc: "guard", title: "④ 公園の門",
+      intro: "橋をわたると、公園の門が見えた。そのとき、遠くから、聞きなれた声が…!",
+      idle: "門の前に、制服の門番が立っている。",
+      beats: [
+        { goal: "ママの声だ!「ここにいるよ」と答えよう。",
+          pre: { who: "mom", en: "Love! Where are you?", ja: "「ラブ!どこにいるの?」" },
+          rw: "mom",
+          o: [O("I'm here, Mom!", "ここだよ、ママ!"), O("I'm there, Mom!", "あそこだよ、ママ!", "There? Where? I can't see you!", "「あそこ?どこ?見えないわ!」"), O("Here I'm, Mom!", "(まちがい)ここ わたしは ママ", "Hmm? Say it again, Love!", "「ん?もう一度言って、ラブ!」")],
+          rpw: "guard",
+          reply: { en: "Stop! The park is closed. Please come back tomorrow.", ja: "「止まれ!公園はもう閉まっている。明日また来なさい。」" },
+          learn: { en: "here / there", ja: "here は 自分のいる場所。there は 離れた場所" } },
+        { goal: "門番に、ママが中にいると伝えよう。",
+          o: [O("My mom is inside.", "ママは 中にいます。"), O("My mom is outside.", "ママは 外にいます。", "Outside? Then why are you here?", "「外?それなら、なぜここにいるの?」"), O("I am inside my mom.", "わたしは ママの中にいます。", "What? That is strange.", "「なに?それは変だぞ。」")],
+          reply: { en: "A woman with a red leash? She went out the back gate five minutes ago!", ja: "「赤いリードの女の人? 五分前に、裏門から出ていったよ!」" },
+          learn: { en: "inside / outside", ja: "inside は 中に。outside は 外に" } }
+      ] }
+  ];
+
+  var FLAT = [];
+  EP1.forEach(function (sc, si) { sc.beats.forEach(function (b, bi) { FLAT.push({ sc: si, bi: bi, b: b }); }); });
+  var TOTAL = FLAT.length;
+
+  /* ---------- 保存 ---------- */
+  var KEY = "love-town-v1";
+  var save = { stars: 0, notes: {} };
+  try { var raw = localStorage.getItem(KEY); if (raw) { var p = JSON.parse(raw); if (p && typeof p === "object") { save.stars = p.stars | 0; save.notes = p.notes && typeof p.notes === "object" ? p.notes : {}; } } } catch (e) {}
+  function persist() { try { localStorage.setItem(KEY, JSON.stringify(save)); } catch (e) {} }
+
+  var app = document.getElementById("app");
+  var noteEl = document.getElementById("note");
+  var noteTimer = null;
+  function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]; }); }
+  var ICON = '<svg class="ico" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9v6h4l5 4V5L8 9H4z"/><path d="M16 9a4 4 0 0 1 0 6"/><path d="M18.5 6.5a8 8 0 0 1 0 11"/></svg>';
+
+  /* ---------- 音声 ---------- */
+  function note(msg) {
+    noteEl.textContent = msg; noteEl.hidden = false;
+    clearTimeout(noteTimer);
+    noteTimer = setTimeout(function () { noteEl.hidden = true; }, 3500);
+  }
+  function pickVoice() {
+    try {
+      var vs = window.speechSynthesis.getVoices() || [];
+      return vs.filter(function (v) { return /^en[-_]US/i.test(v.lang); })[0] || vs.filter(function (v) { return /^en/i.test(v.lang); })[0] || null;
+    } catch (e) { return null; }
+  }
+  function say(text, who, rate) {
+    try {
+      var ss = window.speechSynthesis;
+      if (!ss || !window.SpeechSynthesisUtterance) { note("この画面では音声が使えないようです"); return; }
+      ss.cancel();
+      var w = WHO[who] || WHO.love;
+      var u = new window.SpeechSynthesisUtterance(text);
+      u.lang = "en-US"; u.rate = rate || w.rate; u.pitch = w.pitch;
+      var v = pickVoice(); if (v) u.voice = v;
+      u.onerror = function (ev) { if (ev && ev.error && ev.error !== "canceled" && ev.error !== "interrupted") note("音を出せませんでした(" + ev.error + ")"); };
+      ss.speak(u);
+    } catch (e) { note("音を出せませんでした"); }
+  }
+
+  /* ---------- 状態 ---------- */
+  var S = { view: "home", idx: 0, order: [], done: false, wrong: {}, show: false, hint: false, react: null, misses: 0, lastEn: null };
+  function shuffle(a) { var r = a.slice(), i, j, t; for (i = r.length - 1; i > 0; i--) { j = Math.floor(Math.random() * (i + 1)); t = r[i]; r[i] = r[j]; r[j] = t; } return r; }
+  function cur() { return FLAT[S.idx]; }
+  function prompt() {
+    var c = cur();
+    if (c.b.pre) return c.b.pre;
+    if (c.bi > 0) { var pb = FLAT[S.idx - 1].b; return { who: EP1[c.sc].npc, en: pb.reply.en, ja: pb.reply.ja, rate: pb.reply.rate, rwho: pb.rpw }; }
+    return null;
+  }
+  function beatStart() {
+    var c = cur();
+    S.view = "beat"; S.order = shuffle([0, 1, 2]); S.done = false; S.wrong = {}; S.show = false; S.hint = false; S.react = null;
+    render();
+    var pr = prompt();
+    if (pr) { var who = pr.rwho || pr.who; setTimeout(function () { if (S.view === "beat" && cur() === c) say(pr.en, who, pr.rate); }, 350); }
+  }
+
+  /* ---------- 画面 ---------- */
+  function npcImg(kind) {
+    var w = WHO[kind];
+    if (w && w.spr) return '<img class="npc" src="' + npcSprite(w.spr) + '" alt="' + esc(w.name) + '">';
+    return '<div class="npc voice" aria-label="遠くの声">♪</div>';
+  }
+  function bar(withSegs) {
+    var h = '<div class="bar"><button class="back" data-act="home">&larr; もどる</button>';
+    if (withSegs) {
+      h += '<div class="segs">';
+      for (var i = 0; i < TOTAL; i++) h += '<span class="seg ' + (i < S.idx || (i === S.idx && S.done) ? "ok" : (i === S.idx ? "now" : "")) + '"></span>';
+      h += '</div><span class="count">' + (S.idx + 1) + "/" + TOTAL + "</span>";
+    }
+    return h + "</div>";
+  }
+  function stars(m) { return m <= 3 ? 3 : (m <= 8 ? 2 : 1); }
+  function starStr(n) { var s = ""; for (var i = 0; i < 3; i++) s += i < n ? "★" : "☆"; return s; }
+
+  function homeView() {
+    var n = Object.keys(save.notes).length;
+    return '<div class="stage">' + love("idle", true) +
+      '<div class="win"><span class="who">ラブ</span><p>ここは 知らない町。ことばが通じたら、家に帰れるワン!</p></div></div>' +
+      '<h1 class="title">ラブの英語タウン</h1>' +
+      '<p class="sub">知らない相手に、声をかけよう。</p>' +
+      '<div class="chap">ストーリー</div>' +
+      '<button class="btn red" data-act="start"><span>第1話「迷子のラブ」<br><small>耳で聞いて、長押しで答える。 全' + TOTAL + '場面</small></span><span class="type">' + (save.stars ? starStr(save.stars) : "&rarr;") + '</span></button>' +
+      '<div class="tease"><b>第2話「裏門のひみつ」</b>準備中</div>' +
+      '<div class="cta-row">' +
+      '<button class="btn alt" data-act="notes"><span>ことばノート<br><small>おぼえたフレーズ ' + n + '個</small></span><span class="type">&rarr;</span></button>' +
+      '<a class="btn alt" href="love-english.html"><span>ラブのうっかり英語<br><small>動詞の使いわけ</small></span><span class="type">&rarr;</span></a>' +
+      '<a class="btn alt" href="akubun-dojo.html"><span>悪文なおし道場<br><small>The Elements of Style の18のルール</small></span><span class="type">&rarr;</span></a></div>' +
+      '<p class="small" style="margin-top:20px">キャラクターと物語は、すべてオリジナルです。声は端末の読み上げ機能です(端末によって聞こえ方が変わります)。記録はこの端末のブラウザに保存されます。</p>';
+  }
+  function introView() {
+    var sc = EP1[cur().sc];
+    return bar(false) + '<p class="scene">' + esc(sc.title) + '</p>' +
+      '<div class="stage">' + love("idle", true) + '<div class="win"><span class="who">ラブ</span><p>' + esc(sc.intro) + '</p></div></div>' +
+      '<div class="stage" style="justify-content:flex-end"><div class="win r"><span class="who r">' + esc(WHO[sc.npc].name) + '</span><p>' + esc(sc.idle) + '</p></div>' + npcImg(sc.npc) + '</div>' +
+      '<button class="btn red next" data-act="begin"><span>話しかける</span><span class="type">&rarr;</span></button>';
+  }
+  function beatView() {
+    var c = cur(), sc = EP1[c.sc], b = c.b, pr = prompt();
+    var npcKind = pr && (pr.who === "mom") ? "mom" : sc.npc;
+    var nw = "";
+    if (pr) {
+      nw += '<span class="who r">' + esc(WHO[pr.who].name) + '</span>';
+      nw += '<button class="wbtn" data-act="replay">' + ICON + 'もういちど聞く</button>';
+      nw += '<button class="wbtn' + (S.show ? " on" : "") + '" data-act="meaning">意味を見る</button>';
+      if (S.show) nw += '<p class="en">' + esc(pr.en) + '</p><p class="ja">' + esc(pr.ja) + '</p>';
+    } else {
+      nw += '<span class="who r">' + esc(WHO[sc.npc].name) + '</span><p>' + esc(sc.idle) + '</p>';
+    }
+    if (S.react) nw += '<div class="react"><span class="who r">' + esc(WHO[S.react.who].name) + '</span><p class="en">' + esc(S.react.en) + '</p><p class="ja">' + esc(S.react.ja) + '</p></div>';
+    var h = bar(true) +
+      '<div class="stage" style="justify-content:flex-end"><div class="win r">' + nw + '</div>' + npcImg(pr && pr.who === "mom" ? "mom" : sc.npc) + '</div>' +
+      '<div class="stage">' + love(S.done ? "happy" : (S.react ? "sad" : "idle")) + '<div class="win"><span class="who">ラブ</span><p>' + esc(b.goal) + '</p></div></div>';
+    h += '<div class="opts">';
+    S.order.forEach(function (k, pos) {
+      var o = b.o[k], letter = "ABC".charAt(pos);
+      var reveal = S.done || S.wrong[k] || S.hint;
+      var cls = "opt" + (S.done ? (k === 0 ? " right" : " dim") : (S.wrong[k] ? " wrong" : ""));
+      h += '<button class="' + cls + '" data-k="' + k + '"' + (k === 0 ? ' data-ok="1"' : "") + '><span class="l">' + letter + '</span><span class="tcol">' +
+        (reveal ? '<span class="t">' + esc(o.en) + '</span>' : '<span class="t hid">' + ICON + '耳でたしかめる</span>') +
+        ((S.done || S.wrong[k]) ? '<span class="jp">' + esc(o.jp) + '</span>' : "") + '</span>' +
+        '<span class="m">' + (S.done ? (k === 0 ? "つうじた" : "") : (S.wrong[k] ? "ちがう" : "")) + '</span></button>';
+    });
+    h += '</div>';
+    if (!S.done) {
+      h += '<p class="hint">タップで聞く。 長押しで 答える。</p>';
+      h += '<button class="wbtn" style="margin-top:6px;border-color:var(--lav);color:var(--ink-2)" data-act="hint">' + (S.hint ? "文字をかくす" : "文字を見る(うるさい場所用)") + '</button>';
+    } else {
+      var last = (c.bi === sc.beats.length - 1);
+      h += '<div class="learn"><span class="tag">おぼえよう</span><div class="en">' + esc(b.learn.en) + '</div><div class="ja">' + esc(b.learn.ja) + '</div></div>';
+      if (last) h += '<div class="reply"><div class="small">' + esc(WHO[b.rpw || sc.npc].name) + '</div><div class="en">' + esc(b.reply.en) + '</div><div class="ja">' + esc(b.reply.ja) + '</div></div>';
+      var lastAll = S.idx === TOTAL - 1;
+      h += '<button class="btn red next" data-act="next"><span>' + (lastAll ? "つづく…" : (last ? "つぎの場面へ" : esc(WHO[sc.npc].name) + "の返事を聞く")) + '</span><span class="type">&rarr;</span></button>';
+    }
+    return h;
+  }
+  function endView() {
+    var st = stars(S.misses);
+    return '<div class="stage">' + love("happy", true) + '<div class="win"><span class="who">ラブ</span><p>ことばが通じた!でも、ママは裏門から出ていったらしい…。</p></div></div>' +
+      '<h1 class="title">第1話 おわり</h1>' +
+      '<p class="stars">' + starStr(st) + '</p>' +
+      '<p class="sub">まちがい ' + S.misses + ' 回 / ' + TOTAL + ' 場面</p>' +
+      '<div class="tease"><b>第2話「裏門のひみつ」</b>つづく…(準備中)</div>' +
+      '<div class="cta-row"><button class="btn" data-act="notes"><span>ことばノートを見る</span><span class="type">&rarr;</span></button>' +
+      '<button class="btn alt" data-act="start"><span>もういちど 第1話</span><span class="type">&rarr;</span></button>' +
+      '<button class="btn alt" data-act="home"><span>ホームへ</span><span class="type">&rarr;</span></button></div>';
+  }
+  function notesView() {
+    var rows = "", n = 0;
+    FLAT.forEach(function (f) {
+      var k = f.b.learn.en;
+      if (save.notes[k]) { n++; rows += '<button class="nrow" data-act="nsay" data-en="' + esc(f.b.o[0].en) + '"><span><span class="en">' + esc(k) + '</span><span class="ja">' + esc(f.b.learn.ja) + '</span></span>' + ICON + '</button>'; }
+    });
+    return bar(false) + '<h1 class="title" style="margin-top:6px">ことばノート</h1>' +
+      (n ? '<p class="sub">タップで 聞く(ラブの声)</p>' + rows : '<p class="empty">まだ ありません。第1話で 通じると ここに たまります。</p>');
+  }
+  function render() {
+    var h = S.view === "home" ? homeView() : S.view === "intro" ? introView() : S.view === "beat" ? beatView() : S.view === "end" ? endView() : notesView();
+    app.innerHTML = h;
+    window.scrollTo(0, 0);
+  }
+
+  /* ---------- 操作 ---------- */
+  function choose(k) {
+    if (S.view !== "beat" || S.done) return;
+    var c = cur(), b = c.b, sc = EP1[c.sc];
+    if (k === 0) {
+      S.done = true; S.react = null; save.notes[b.learn.en] = true; persist();
+      var last = (c.bi === sc.beats.length - 1);
+      render();
+      if (last) say(b.reply.en, b.rpw || sc.npc, b.reply.rate);
+    } else {
+      if (!S.wrong[k]) { S.wrong[k] = true; S.misses++; }
+      var r = b.o[k].r;
+      S.react = { who: b.rw || sc.npc, en: r.en, ja: r.ja };
+      render();
+      say(r.en, b.rw || sc.npc);
+    }
+  }
+  var holdT = null, held = false;
+  function clearHold() { clearTimeout(holdT); holdT = null; var e = app.querySelector(".opt.holding"); if (e) e.classList.remove("holding"); }
+  app.addEventListener("pointerdown", function (e) {
+    var el = e.target.closest ? e.target.closest(".opt") : null;
+    if (!el || S.done) return;
+    var k = +el.getAttribute("data-k"); held = false;
+    el.classList.add("holding");
+    clearTimeout(holdT);
+    holdT = setTimeout(function () { held = true; holdT = null; choose(k); }, 600);
+  });
+  function up(e) {
+    if (holdT === null) return;
+    var el = app.querySelector(".opt.holding"); var k = el ? +el.getAttribute("data-k") : -1;
+    clearHold();
+    if (e.type === "pointerup" && k >= 0) say(cur().b.o[k].en, "love");
+  }
+  document.addEventListener("pointerup", up);
+  document.addEventListener("pointercancel", function () { clearHold(); });
+  app.addEventListener("contextmenu", function (e) { if (e.target.closest && e.target.closest(".opt")) e.preventDefault(); });
+  app.addEventListener("click", function (e) {
+    var opt = e.target.closest ? e.target.closest(".opt") : null;
+    if (opt) {
+      var k = +opt.getAttribute("data-k");
+      if (e.detail === 0) { if (S.done) say(cur().b.o[k].en, "love"); else choose(k); }
+      else if (S.done) say(cur().b.o[k].en, "love");
+      return;
+    }
+    var a = e.target.closest ? e.target.closest("[data-act]") : null;
+    if (!a) return;
+    var act = a.getAttribute("data-act");
+    if (act === "home") { try { window.speechSynthesis.cancel(); } catch (x) {} S.view = "home"; render(); }
+    else if (act === "start") { S.idx = 0; S.misses = 0; S.view = "intro"; render(); }
+    else if (act === "begin") { beatStart(); }
+    else if (act === "replay") { var pr = prompt(); if (pr) say(pr.en, pr.rwho || pr.who, pr.rate); }
+    else if (act === "meaning") { S.show = !S.show; render(); }
+    else if (act === "hint") { S.hint = !S.hint; render(); }
+    else if (act === "notes") { S.view = "notes"; render(); }
+    else if (act === "nsay") { say(a.getAttribute("data-en"), "love"); }
+    else if (act === "next") {
+      var prevSc = cur().sc;
+      if (S.idx >= TOTAL - 1) {
+        save.stars = Math.max(save.stars, stars(S.misses)); persist();
+        S.view = "end"; render();
+      } else {
+        S.idx++;
+        if (cur().sc !== prevSc) { S.view = "intro"; render(); } else beatStart();
+      }
+    }
+  });
+
+  render();
+  window.__LT = { EP1: EP1 };
+})();
+</script>
+</body>
+</html>
