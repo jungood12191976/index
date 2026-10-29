@@ -112,6 +112,7 @@ h1, h2, h3, p { margin: 0; }
 .opt { position: relative; overflow: hidden; width: 100%; display: grid; grid-template-columns: 1.4em minmax(0, 1fr) auto; gap: 10px; align-items: center; text-align: left; padding: 16px 14px 18px; border: 2px solid var(--lav); border-radius: 16px; background: var(--paper); user-select: none; -webkit-user-select: none; -webkit-touch-callout: none; touch-action: manipulation; }
 .opt .l { font-family: var(--f-type); font-weight: 700; font-size: 26px; color: var(--ink-2); }
 .opt .t { font-family: var(--f-type); font-size: 30px; font-weight: 700; line-height: 1.3; overflow-wrap: anywhere; }
+.opt .t.hid { font-family: var(--f-ui); font-size: 22px; font-weight: 500; color: var(--ink-2); }
 .opt .m { font-weight: 700; font-size: 17px; white-space: nowrap; }
 .opt .ico { color: var(--ink-2); }
 .opt::after { content: ""; position: absolute; left: 0; bottom: 0; height: 6px; width: 0; background: var(--pencil); }
@@ -448,7 +449,7 @@ a.btn { text-decoration: none; }
         if (o.ok) { cls += " right"; mark = '<span class="m">正解</span>'; }
         else if (k === it.picked) { cls += " wrong"; mark = '<span class="m">不正解</span>'; }
       }
-      return '<button class="' + cls + '" data-k="' + k + '"><span class="l">' + L[k] + '</span><span class="t">' + esc(o.t) + "</span>" + mark + "</button>";
+      return '<button class="' + cls + '" data-k="' + k + '" aria-label="' + (answered ? esc(o.t) : "選択肢 " + L[k]) + '"><span class="l">' + L[k] + '</span><span class="t' + (answered ? "" : " hid") + '">' + (answered ? esc(o.t) : "♪ 耳でたしかめる") + "</span>" + mark + "</button>";
     }).join("");
     var fb = "";
     if (answered) {
@@ -463,7 +464,7 @@ a.btn { text-decoration: none; }
         '<span class="tag">イメージのちがい</span><ul class="ims">' + ims + "</ul></div>" +
         '<button class="btn next" data-act="next"><span>' + (last ? "結果を見る" : "次の問題へ") + '</span><span class="type">&rarr;</span></button>';
     }
-    var hint = answered ? "" : '<p class="hint">タップ: 英文を音で聞く / 長押し: これを答えにする</p>';
+    var hint = answered ? "" : '<p class="hint">タップ: 聞く / 長押し: これを答えにする</p>';
     return barView() +
       '<div class="stage">' + love(state, false) + '<div class="win"><span class="who">ラブ</span><p>' + esc(it.ja) + "</p></div></div>" +
       '<div class="sentwrap"><div class="sent">' + sentHtml(it, answered ? it.ok : "") + "</div></div>" +
