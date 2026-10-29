@@ -169,7 +169,7 @@ a.btn { text-decoration: none; }
   "use strict";
 
   /* ---------- 問題データ(1問=ラブのひと言+英文の空所+3択。先頭の選択肢が正解) ---------- */
-  var VIM = {"borrow": "borrow: 借りる。あとで返す", "lend": "lend: 貸す。あとで返してもらう", "give": "give: あげる。人に渡す", "take": "take: 持っていく・連れていく・取る", "teach": "teach: 教える。人に知識を渡す", "learn": "learn: 習って、身につける", "study": "study: 勉強する。机に向かう", "bring": "bring: 持ってくる。こちらへ運ぶ", "carry": "carry: 持ち運ぶ。手で運んで移動する", "go": "go: 行く。ここから離れていく", "wear": "wear: 着ている。身につけている状態", "put": "put: 置く。put on なら「着る」動作", "make": "make: 作る。新しく生み出す", "do": "do: する。やることをこなす", "get": "get: 手に入れる。もらう", "send": "send: 送る。相手に届くようにする", "ask": "ask: たずねる。頼む", "come": "come: 来る。相手や話題のほうへ近づく", "arrive": "arrive: 着く。arrive at で場所に着く", "stay": "stay: その場にとどまる", "leave": "leave: 離れる。置いていく", "keep": "keep: 持ち続ける。そのままにする", "reach": "reach: 届く。場所に着く(あとに at はいらない)", "win": "win: 勝つ", "lose": "lose: 負ける。なくす", "beat": "beat: 相手に勝つ。beat 相手", "wait": "wait: 待つ(wait for)", "look": "look: 目を向ける・探す(look for)", "watch": "watch: 動くものを目で追う", "find": "find: 見つける。見つかる", "search": "search: 探す(search for)", "tell": "tell: 人に伝える。tell a lie は「うそをつく」", "say": "say: 言葉を口に出す", "speak": "speak: 話す。言語や話し方に使う", "hear": "hear: 耳に入る。聞こえる", "talk": "talk: おしゃべりする(talk about)", "answer": "answer: 答える。質問に返事をする", "see": "see: 目に入る。見える", "write": "write: 文字で書く", "draw": "draw: 線で絵をかく", "read": "read: 読む", "throw": "throw: 投げる", "catch": "catch: つかまえる。受け止める", "jump": "jump: とぶ。ジャンプする", "drink": "drink: 飲む", "eat": "eat: 食べる", "bite": "bite: かむ。かじる", "miss": "miss: いなくてさみしい。のがす", "hurt": "hurt: 痛む。傷つける", "break": "break: こわす。割る", "cut": "cut: 切る", "open": "open: 開ける", "visit": "visit: 訪ねる。あとに to はいらない", "join": "join: 仲間に加わる", "meet": "meet: 会う。初めて会う", "introduce": "introduce: 紹介する", "know": "know: 知っている"};
+  var VIM = {"borrow": "borrow: 借りる。あとで返す", "lend": "lend: 貸す。あとで返してもらう", "give": "give: あげる。人に渡す", "take": "take: 持っていく・連れていく・取る", "teach": "teach: 教える。人に知識を渡す", "learn": "learn: 習って、身につける", "study": "study: 勉強する。机に向かう", "bring": "bring: 持ってくる。こちらへ運ぶ", "carry": "carry: 持ち運ぶ。手で運んで移動する", "go": "go: 行く。ここから離れていく", "wear": "wear: 着ている。身につけている状態", "put": "put: 置く。put on なら「着る」動作", "make": "make: 作る。新しく生み出す", "do": "do: する。やることをこなす", "get": "get: 手に入れる。もらう", "send": "send: 送る。相手に届くようにする", "ask": "ask: たずねる。頼む", "come": "come: 来る。相手や話題のほうへ近づく", "arrive": "arrive: 着く。arrive at で場所に着く", "stay": "stay: その場にとどまる", "leave": "leave: 離れる。置いていく", "keep": "keep: 持ち続ける。そのままにする", "reach": "reach: 届く。場所に着く(あとに at はいらない)", "win": "win: 勝つ", "lose": "lose: 負ける。なくす", "beat": "beat: 相手に勝つ。beat 相手", "wait": "wait: 待つ(wait for)", "look": "look: 目を向ける・探す(look for)", "watch": "watch: 動くものを目で追う", "find": "find: 見つける。見つかる", "search": "search: 探す(search for)", "tell": "tell: 人に伝える。tell a lie は「うそをつく」", "say": "say: 言葉を口に出す", "speak": "speak: 話す。言語や話し方に使う", "hear": "hear: 耳に入る。聞こえる", "talk": "talk: おしゃべりする(talk about)", "answer": "answer: 答える。質問に返事をする", "see": "see: 目に入る。見える", "write": "write: 文字で書く", "draw": "draw: 線で絵をかく", "read": "read: 読む", "throw": "throw: 投げる", "catch": "catch: つかまえる。受け止める", "jump": "jump: とぶ。ジャンプする", "drink": "drink: 飲む", "eat": "eat: 食べる", "bite": "bite: かむ。かじる", "miss": "miss: いなくてさみしい。のがす", "hurt": "hurt: 痛む。傷つける", "break": "break: こわす。割る", "cut": "cut: 切る", "open": "open: 開ける", "visit": "visit: 訪ねる。あとに to はいらない", "join": "join: 仲間に加わる", "meet": "meet: 会う。初めて会う", "introduce": "introduce: 紹介する", "know": "know: 知っている", "hold": "hold: 手でおさえる。持ったままにする", "cook": "cook: 火を使って料理する", "build": "build: 組み立てて作る。建てる"};
   var GROUPS = [
     { id: "miru", ja: "見る", en: "see / look / watch",
       ims: { see: "see: 目に入る。見えてしまう", look: "look: そちらへ目を向ける(look at)", watch: "watch: 動くものを、目で追う" },
@@ -252,14 +252,62 @@ a.btn { text-decoration: none; }
         { ja: "友だちのマックスを、紹介するね。", s: "Let me ( ) my friend, Max.", tr: "友だちのマックスを紹介するね。", o: [["introduce", "introduce"], ["meet", "meet"], ["know", "know"]] }
       ] },
     /* 準備中(あとから足す候補) */
-    { id: "p1", ja: "借りる・貸す", en: "borrow / lend", wait: true },
-    { id: "p2", ja: "教える・習う", en: "teach / learn / study", wait: true },
-    { id: "p3", ja: "持つ", en: "carry / hold / take / bring", wait: true },
-    { id: "p4", ja: "取る", en: "take / get / catch", wait: true },
-    { id: "p5", ja: "作る", en: "make / build / cook", wait: true },
-    { id: "p6", ja: "行く・来る", en: "go / come", wait: true },
-    { id: "p7", ja: "着る", en: "wear / put on", wait: true },
-    { id: "p8", ja: "a と the", en: "a / the", wait: true }
+    { id: "p1", ja: "借りる・貸す", en: "borrow / lend / give", ims: VIM, qs: [
+        { ja: "マックスから、ボールを借りた。", s: "I ( ) a ball from Max.", tr: "ぼくはマックスからボールを借りた。", o: [["borrowed", "borrow"], ["lent", "lend"], ["gave", "give"]] },
+        { ja: "あとで返してもらう約束で、マックスにボールを貸した。", s: "I ( ) Max my ball. He will give it back.", tr: "ぼくはマックスにボールを貸した。彼は返してくれる。", o: [["lent", "lend"], ["borrowed", "borrow"], ["gave", "give"]] },
+        { ja: "ねえ、ペンを貸して。(あとで返す)", s: "Can you ( ) me a pen? I will give it back.", tr: "ペンを貸してくれる?あとで返すね。", o: [["lend", "lend"], ["borrow", "borrow"], ["give", "give"]] },
+        { ja: "ねえ、ペンを借りてもいい?(あとで返す)", s: "Can I ( ) your pen? I will give it back.", tr: "ペンを借りてもいい?あとで返すね。", o: [["borrow", "borrow"], ["lend", "lend"], ["give", "give"]] },
+        { ja: "マックスから骨を借りた。返さなきゃ。", s: "I ( ) a bone from Max. I must give it back.", tr: "ぼくはマックスから骨を借りた。返さなきゃ。", o: [["borrowed", "borrow"], ["lent", "lend"], ["gave", "give"]] }
+      ] },
+    { id: "p2", ja: "教える・習う", en: "teach / learn / study", ims: VIM, qs: [
+        { ja: "ママが、ぼくにおすわりを教えた。", s: "Mom ( ) me to sit.", tr: "ママはぼくにおすわりを教えた。", o: [["taught", "teach"], ["learned", "learn"], ["studied", "study"]] },
+        { ja: "ぼくは、おすわりを覚えた。", s: "I ( ) to sit.", tr: "ぼくはおすわりを覚えた。", o: [["learned", "learn"], ["taught", "teach"], ["studied", "study"]] },
+        { ja: "ぼくは毎晩、テストのために勉強する。", s: "I ( ) for the test every night.", tr: "ぼくは毎晩、テストのために勉強する。", o: [["study", "study"], ["teach", "teach"], ["learn", "learn"]] },
+        { ja: "マックスが、新しいゲームを教えてくれた。", s: "Max ( ) me a new game.", tr: "マックスは新しいゲームを教えてくれた。", o: [["taught", "teach"], ["learned", "learn"], ["studied", "study"]] },
+        { ja: "ぼくは、ママからたくさん学ぶ。", s: "I ( ) a lot from Mom.", tr: "ぼくはママからたくさん学ぶ。", o: [["learn", "learn"], ["teach", "teach"], ["study", "study"]] }
+      ] },
+    { id: "p3", ja: "持つ・運ぶ", en: "hold / carry / bring", ims: VIM, qs: [
+        { ja: "ぼくの手を、にぎって!", s: "( ) my hand!", tr: "ぼくの手をにぎって!", o: [["Hold", "hold"], ["Carry", "carry"], ["Bring", "bring"]] },
+        { ja: "ママは毎日、カバンを持ち歩く。", s: "Mom ( ) a bag every day.", tr: "ママは毎日カバンを持ち歩く。", o: [["carries", "carry"], ["holds", "hold"], ["brings", "bring"]] },
+        { ja: "ママが、タオルを持ってきてくれた。", s: "Mom ( ) me a towel.", tr: "ママはぼくにタオルを持ってきてくれた。", o: [["brought", "bring"], ["carried", "carry"], ["held", "hold"]] },
+        { ja: "ドアを開けたまま、おさえておいて。", s: "( ) the door open, please.", tr: "ドアを開けたままおさえておいて。", o: [["Hold", "hold"], ["Carry", "carry"], ["Bring", "bring"]] },
+        { ja: "ママは、ぼくを車まで運んだ。", s: "Mom ( ) me to the car.", tr: "ママはぼくを車まで運んだ。", o: [["carried", "carry"], ["held", "hold"], ["kept", "keep"]] }
+      ] },
+    { id: "p4", ja: "取る・つかまえる", en: "take / get / catch", ims: VIM, qs: [
+        { ja: "空中で、ボールをキャッチした!", s: "I ( ) the ball in the air!", tr: "ぼくは空中でボールをキャッチした!", o: [["caught", "catch"], ["took", "take"], ["threw", "throw"]] },
+        { ja: "ぼくのおもちゃを、取らないで!", s: "Don't ( ) my toy!", tr: "ぼくのおもちゃを取らないで!", o: [["take", "take"], ["catch", "catch"], ["wait", "wait"]] },
+        { ja: "ママから、プレゼントをもらった。", s: "I ( ) a present from Mom.", tr: "ぼくはママからプレゼントをもらった。", o: [["got", "get"], ["caught", "catch"], ["wore", "wear"]] },
+        { ja: "みんなで、写真をとろう!", s: "Let's ( ) a photo!", tr: "みんなで写真をとろう!", o: [["take", "take"], ["catch", "catch"], ["arrive", "arrive"]] },
+        { ja: "ぼくは、ひるねをする。", s: "I will ( ) a nap.", tr: "ぼくはひるねをする。", o: [["take", "take"], ["catch", "catch"], ["hold", "hold"]] }
+      ] },
+    { id: "p5", ja: "作る", en: "make / build / cook", ims: VIM, qs: [
+        { ja: "ママが、夕ごはんを料理した。", s: "Mom ( ) dinner.", tr: "ママは夕ごはんを料理した。", o: [["cooked", "cook"], ["built", "build"], ["ate", "eat"]] },
+        { ja: "パパが、犬小屋を建てた。", s: "Dad ( ) a doghouse.", tr: "パパは犬小屋を建てた。", o: [["built", "build"], ["cooked", "cook"], ["ate", "eat"]] },
+        { ja: "ぼくは、新しい友だちをつくった。", s: "I ( ) a new friend.", tr: "ぼくは新しい友だちをつくった。", o: [["made", "make"], ["built", "build"], ["cooked", "cook"]] },
+        { ja: "ママが、ぼくにケーキを作ってくれた。", s: "Mom ( ) me a cake.", tr: "ママはぼくにケーキを作ってくれた。", o: [["made", "make"], ["built", "build"], ["ate", "eat"]] },
+        { ja: "ぼくは、庭に穴をあけた。", s: "I ( ) a hole in the garden.", tr: "ぼくは庭に穴をあけた。", o: [["made", "make"], ["built", "build"], ["cooked", "cook"]] }
+      ] },
+    { id: "p6", ja: "行く・来る", en: "go / come / arrive", ims: VIM, qs: [
+        { ja: "マックス、うちにおいで!", s: "Max, ( ) to my house!", tr: "マックス、うちにおいで!", o: [["come", "come"], ["go", "go"], ["arrive", "arrive"]] },
+        { ja: "ぼくは毎週日曜に、マックスの家へ行く。", s: "I ( ) to Max's house every Sunday.", tr: "ぼくは毎週日曜にマックスの家へ行く。", o: [["go", "go"], ["come", "come"], ["arrive", "arrive"]] },
+        { ja: "ごはんができたよ!ここへおいで!", s: "Dinner is ready! ( ) here!", tr: "ごはんができたよ!ここへおいで!", o: [["Come", "come"], ["Go", "go"], ["Arrive", "arrive"]] },
+        { ja: "ぼくたちは公園にいる。家へ帰ろう。", s: "We are in the park. Let's ( ) home.", tr: "ぼくたちは公園にいる。家へ帰ろう。", o: [["go", "go"], ["come", "come"], ["arrive", "arrive"]] },
+        { ja: "マックスは、1時間前にここへ来た。", s: "Max ( ) here an hour ago.", tr: "マックスは1時間前にここへ来た。", o: [["came", "come"], ["went", "go"], ["stayed", "stay"]] }
+      ] },
+    { id: "p7", ja: "着る・かぶる", en: "wear / put on", ims: VIM, qs: [
+        { ja: "ぼくは冬、いつも赤いコートを着ている。", s: "I always ( ) a red coat in winter.", tr: "ぼくは冬、いつも赤いコートを着ている。", o: [["wear", "wear"], ["put", "put"], ["make", "make"]] },
+        { ja: "ママが、ぼくに帽子をかぶせた。", s: "Mom ( ) a hat on my head.", tr: "ママはぼくの頭に帽子をかぶせた。", o: [["put", "put"], ["wore", "wear"], ["took", "take"]] },
+        { ja: "きょうは、青いリボンをつけている。", s: "Today I'm ( ) a blue ribbon.", tr: "きょうは青いリボンをつけている。", o: [["wearing", "wear"], ["putting", "put"], ["taking", "take"]] },
+        { ja: "コートを着て!(着る動作)", s: "Please ( ) on your coat.", tr: "コートを着て!", o: [["put", "put"], ["wear", "wear"], ["make", "make"]] },
+        { ja: "ママは、きのう、すてきなドレスを着ていた。", s: "Mom ( ) a nice dress yesterday.", tr: "ママはきのう、すてきなドレスを着ていた。", o: [["wore", "wear"], ["put", "put"], ["took", "take"]] }
+      ] },
+    { id: "p8", ja: "a と the", en: "a / the / an", ims: VIM, qs: [
+        { ja: "ママは、犬を飼っている。名前はラブ。", s: "Mom has ( ) dog. His name is Love.", tr: "ママは犬を飼っている。名前はラブ。", o: [["a", "a"], ["the", "b"], ["an", "c"]], ims: {"a": "a: はじめて出てくる、ひとつのもの", "b": "the: 話す2人が「どれか」わかっているもの(まだ話に出ていない犬)", "c": "an: 母音の音の前で使う。dog は d の音"} },
+        { ja: "ママは犬を飼っている。その犬は茶色だ。", s: "Mom has a dog. ( ) dog is brown.", tr: "ママは犬を飼っている。その犬は茶色だ。", o: [["The", "b"], ["A", "a"], ["An", "c"]], ims: {"a": "A: はじめて出てくるときの言葉。その犬は、すでに話に出た", "b": "The: すでに話に出た、どれか決まっているもの", "c": "An: 母音の音の前で使う。dog は d の音"} },
+        { ja: "ぼくは、りんごを1つ食べた。", s: "I ate ( ) apple.", tr: "ぼくはりんごを1つ食べた。", o: [["an", "c"], ["a", "a"], ["the", "b"]], ims: {"a": "a: apple は、母音の音で始まるので、a は使わない", "b": "the: どのりんごか決まっているときの言葉。ここは1つ", "c": "an: apple は母音の音(ア)で始まるので an"} },
+        { ja: "あのドアを、閉めて。(部屋のあのドア)", s: "Please close ( ) door.", tr: "あのドアを閉めて。", o: [["the", "b"], ["a", "a"], ["an", "c"]], ims: {"a": "a: どれでもいい、ひとつのドア", "b": "the: 2人とも、どのドアか分かっているとき", "c": "an: 母音の音の前で使う。door は d の音"} },
+        { ja: "きょうは、太陽がまぶしい。", s: "( ) sun is bright today.", tr: "きょうは太陽がまぶしい。", o: [["The", "b"], ["A", "a"], ["An", "c"]], ims: {"a": "A: 太陽は1つだけ。どれか決まっているので a は使わない", "b": "The: 世界に1つだけのものには the", "c": "An: sun は s の音で始まるので an は使わない"} }
+      ] },
   ];
   function grp(id) { for (var i = 0; i < GROUPS.length; i++) if (GROUPS[i].id === id) return GROUPS[i]; return null; }
   function playable() { return GROUPS.filter(function (g) { return !g.wait && !g.hidden; }); }
@@ -416,7 +464,7 @@ a.btn { text-decoration: none; }
       '<p class="sub">ラブの場面を読んで、3つから選ぶ。</p>' +
       '<div class="count-line"><span class="small">習得</span><span class="type"><b>' + done + "</b> / " + pl.length + "</span></div>" +
       '<div class="cta-row">' + cta + "</div>" +
-      '<div class="chap">グループ(準備中のものは、あとから増やせます)</div>' + rows +
+      '<div class="chap">グループ</div>' + rows +
       '<a class="btn alt" style="margin-top:28px" href="akubun-dojo.html"><span>悪文なおし道場<br><small>The Elements of Style の18のルール</small></span><span class="type">&rarr;</span></a>' +
       '<p class="small" style="margin-top:20px">動詞は CEFR-J Wordlist ver 1.5(東京外国語大学 投野研究室)の入門・初級の語から選んでいます。記録はこの端末のブラウザに保存されます。</p>';
   }
